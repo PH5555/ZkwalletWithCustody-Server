@@ -14,4 +14,6 @@ public interface CorporationRepository extends JpaRepository<Corporation, UUID> 
 
     @Query("select corporation from Corporation corporation left join fetch corporation.members")
     List<Corporation> findAllWithMembers();
+
+    boolean existsCorporationByName(String name);
 }

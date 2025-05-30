@@ -5,6 +5,7 @@ import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 public class Corporation {
     @Id
     private String corporationId;

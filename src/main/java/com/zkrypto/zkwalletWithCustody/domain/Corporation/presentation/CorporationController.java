@@ -1,15 +1,14 @@
 package com.zkrypto.zkwalletWithCustody.domain.Corporation.presentation;
 
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/corporation")
@@ -28,8 +27,8 @@ public class CorporationController {
     }
 
     @PostMapping("/wallet")
-    public void createCorporationWallet() {
-
+    public ApiResponse<WalletResponse> createCorporationWallet(@RequestBody WalletCreationCommand walletCreationCommand) {
+        return ApiResponse.success(corporationService.createCorporationWallet(walletCreationCommand));
     }
 
     @GetMapping("/wallet")

@@ -1,5 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.global.jwt;
 
+import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -24,7 +25,7 @@ public class JwtTokenProvider {
     /**
      * AccessToken 생성 함수
      */
-    public String generateAccessToken(String subject, String role, Date expiredAt) {
+    public String generateAccessToken(String subject, Role role, Date expiredAt) {
         return Jwts.builder()
                 .setSubject(subject)
                 .claim("role", role)

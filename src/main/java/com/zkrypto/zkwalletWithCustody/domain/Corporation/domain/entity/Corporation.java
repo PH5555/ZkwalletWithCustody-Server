@@ -4,12 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
 public class Corporation {
     @Id
     private String corporationId;
@@ -22,4 +24,9 @@ public class Corporation {
     private LocalDateTime createdAt;
 
     private String secretKey;
+
+    public Corporation(String corporationId, String name) {
+        this.corporationId = corporationId;
+        this.name = name;
+    }
 }

@@ -15,12 +15,14 @@ import java.util.Base64;
 public class CorporationService {
     private final CorporationRepository corporationRepository;
 
-    public void createCorporation(CorporationCreationCommand corporationCreationCommand) {
+    public Corporation createCorporation(CorporationCreationCommand corporationCreationCommand) {
         // salt 생성
         String salt = generateSalt();
 
         // 법인 생성
-        Corporation.create(corporationCreationCommand, salt);
+        Corporation corporation = Corporation.create(corporationCreationCommand, salt);
+        corporationRepository.save(corporation);
+        return corporation;
     }
 
     private String generateSalt() {

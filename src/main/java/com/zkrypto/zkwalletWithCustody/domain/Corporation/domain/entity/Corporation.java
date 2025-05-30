@@ -1,15 +1,15 @@
 package com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity;
 
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +25,9 @@ public class Corporation {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "corporation")
+    private List<Member> members = new ArrayList<>();
 
     private String secretKey;
 

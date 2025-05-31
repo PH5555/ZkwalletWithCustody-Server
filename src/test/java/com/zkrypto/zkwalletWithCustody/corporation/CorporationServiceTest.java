@@ -1,6 +1,7 @@
 package com.zkrypto.zkwalletWithCustody.corporation;
 
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
@@ -37,5 +38,10 @@ public class CorporationServiceTest {
         corporationService.createCorporation(new CorporationCreationCommand("지크립토4"));
         List<CorporationResponse> allCorporation = corporationService.getAllCorporation();
         Assertions.assertThat(allCorporation.size()).isEqualTo(4);
+    }
+
+    @Test
+    void 지갑생성() {
+        corporationService.createCorporationWallet(new WalletCreationCommand());
     }
 }

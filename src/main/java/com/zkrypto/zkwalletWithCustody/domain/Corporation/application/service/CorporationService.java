@@ -6,6 +6,7 @@ import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.respon
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
 
+import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -25,7 +27,7 @@ import java.util.List;
 @Slf4j
 public class CorporationService {
     private final CorporationRepository corporationRepository;
-
+    private final Mimc7HashService mimc7HashService;
     /**
      * 법인 생성 메서드
      */
@@ -59,16 +61,19 @@ public class CorporationService {
      */
     public WalletResponse createCorporationWallet(WalletCreationCommand walletCreationCommand) {
         // 법인 존재 확인
-        Corporation corporation = corporationRepository.findCorporationByCorporationId(walletCreationCommand.getCorporationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+//        Corporation corporation = corporationRepository.findCorporationByCorporationId(walletCreationCommand.getCorporationId())
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
 
         // 지갑 생성
-        String privateKey = generateWallet(corporation);
+        BigInteger privateKey = generateWallet();
+        BigInteger hash = mimc7HashService.hash(privateKey);
 
-
+        log.info("private key : {}", privateKey);
+        log.info("hash : {}", hash);
+        return null;
     }
 
-    public String generateWallet(Corporation corporation) {
+    public BigInteger generateWallet() {
         ECKeyPair keyPair = null;
         try {
             keyPair = Keys.createEcKeyPair();
@@ -79,11 +84,10 @@ public class CorporationService {
         } catch (NoSuchProviderException e) {
             throw new RuntimeException(e);
         }
-        String privateKeyHex = keyPair.getPrivateKey().toString(16);
-        String publicKeyHex = keyPair.getPublicKey().toString(16);
+        BigInteger privateKeyHex = keyPair.getPrivateKey();
         String address = "0x" + Keys.getAddress(keyPair);
 
-        corporation.setAddress(address);
+//        corporation.setAddress(address);
         return privateKeyHex;
     }
 

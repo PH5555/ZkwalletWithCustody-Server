@@ -1,0 +1,19 @@
+package com.zkrypto.zkwalletWithCustody.global.crypto;
+
+import java.math.BigInteger;
+import com.ing.dlt.zkkrypto.ecc.mimc.Mimc7Hash;
+import org.springframework.stereotype.Service;
+
+@Service
+public class Mimc7HashService {
+    private final Mimc7Hash mimc7;
+
+    public Mimc7HashService() {
+        mimc7 = new Mimc7Hash();
+    }
+
+    public BigInteger hash(BigInteger input) {
+        byte[] hash = mimc7.hash(input.toByteArray());
+        return new BigInteger(hash);
+    }
+}

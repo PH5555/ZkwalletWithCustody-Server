@@ -6,8 +6,10 @@ import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.respon
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7HashService;
+import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7Utils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.SaltUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.ec.ECPoint;
@@ -29,7 +31,8 @@ import java.util.List;
 @Slf4j
 public class CorporationService {
     private final CorporationRepository corporationRepository;
-    private final Mimc7HashService mimc7HashService;
+    private final Mimc7Utils mimc7HashService;
+    private final AESUtils aesUtils;
 
     /**
      * 법인 생성 메서드
@@ -42,7 +45,7 @@ public class CorporationService {
         }
 
         // salt 생성
-        String salt = generateSalt();
+        String salt = SaltUtils.generateSalt();
 
         // 법인 생성
         Corporation corporation = Corporation.create(corporationCreationCommand, salt);
@@ -62,47 +65,36 @@ public class CorporationService {
     /**
      * 지갑 생성 메서드
      */
-    public WalletResponse createCorporationWallet(WalletCreationCommand walletCreationCommand) {
+    public WalletResponse createCorporationWallet(WalletCreationCommand walletCreationCommand) throws Exception {
         // 법인 존재 확인
-//        Corporation corporation = corporationRepository.findCorporationByCorporationId(walletCreationCommand.getCorporationId())
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+        Corporation corporation = corporationRepository.findCorporationByCorporationId(walletCreationCommand.getCorporationId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+
+        // 지갑 이미 있는지 확인
+        if(!corporation.getAddress().isEmpty()) {
+            throw new IllegalArgumentException("이미 지갑이 존재합니다.");
+        }
 
         // 지갑 생성
-        BigInteger privateKey = generateWallet();
+        BigInteger privateKey = generateWallet(corporation);
         BigInteger usk = mimc7HashService.hash(privateKey);
 
+        // usk 저장
+        aesUtils.encrypt(usk.toString(), corporation.getSalt());
 
-        return null;
+        // ena 등록
+
+
+        return new WalletResponse(privateKey.toString());
     }
 
-    public BigInteger generateWallet() {
-        ECKeyPair keyPair = null;
-        try {
-            keyPair = Keys.createEcKeyPair();
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchProviderException e) {
-            throw new RuntimeException(e);
-        }
+    public BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        ECKeyPair keyPair = Keys.createEcKeyPair();
         BigInteger privateKeyHex = keyPair.getPrivateKey();
         String address = "0x" + Keys.getAddress(keyPair);
 
-//        corporation.setAddress(address);
+        corporation.setAddress(address);
         return privateKeyHex;
-    }
-
-    private String generateSalt() {
-        SecureRandom sr = null;
-        try {
-            sr = SecureRandom.getInstanceStrong();
-            byte[] saltBytes = new byte[16];
-            sr.nextBytes(saltBytes);
-            return Base64.getEncoder().encodeToString(saltBytes);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void recoverFromUserSk(BigInteger sk) {

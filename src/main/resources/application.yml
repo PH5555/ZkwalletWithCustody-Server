@@ -18,5 +18,9 @@ spring:
         jdbc:
           batch_size: 100
 
+encryption:
+  aes:
+    key: my-secret-password
+
 jwt:
   secret: W32i/qpvlu5IGB3zWr4jZQUgQmbpm2thHOqHAOwofCZxn4fOfnFwF3Znd1qTYn72A2eR6aqvIAzrcWkx5wAbMA==

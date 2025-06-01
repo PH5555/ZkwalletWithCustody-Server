@@ -6,14 +6,19 @@ import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.respon
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
+@Slf4j
 public class CorporationServiceTest {
 
     @Autowired
@@ -21,6 +26,9 @@ public class CorporationServiceTest {
 
     @Autowired
     private CorporationRepository corporationRepository;
+
+    @Autowired
+    private AESUtils aesUtils;
 
     @Test
     void 법인생성() {
@@ -43,5 +51,14 @@ public class CorporationServiceTest {
     @Test
     void 지갑생성() {
         corporationService.createCorporationWallet(new WalletCreationCommand());
+    }
+
+    @Test
+    void 암호화테스트() throws Exception {
+        BigInteger test = new BigInteger("1000");
+        String cipher = aesUtils.encrypt(test.toString(), "test");
+        log.info("cipher : {}", cipher);
+        String plain = aesUtils.decrypt(cipher, "test");
+        Assertions.assertThat(test).isEqualTo(new BigInteger(plain));
     }
 }

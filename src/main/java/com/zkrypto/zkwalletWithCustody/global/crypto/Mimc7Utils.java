@@ -7,10 +7,10 @@ import com.ing.dlt.zkkrypto.ecc.mimc.Mimc7Hash;
 import org.springframework.stereotype.Service;
 
 @Service
-public class Mimc7HashService {
+public class Mimc7Utils {
     private final Mimc7Hash mimc7;
 
-    public Mimc7HashService() {
+    public Mimc7Utils() {
         mimc7 = new Mimc7Hash();
     }
 

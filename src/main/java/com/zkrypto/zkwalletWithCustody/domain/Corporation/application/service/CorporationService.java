@@ -6,9 +6,11 @@ import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.respon
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7HashService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.math.ec.ECPoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.crypto.ECKeyPair;
@@ -28,6 +30,7 @@ import java.util.List;
 public class CorporationService {
     private final CorporationRepository corporationRepository;
     private final Mimc7HashService mimc7HashService;
+
     /**
      * 법인 생성 메서드
      */
@@ -66,10 +69,9 @@ public class CorporationService {
 
         // 지갑 생성
         BigInteger privateKey = generateWallet();
-        BigInteger hash = mimc7HashService.hash(privateKey);
+        BigInteger usk = mimc7HashService.hash(privateKey);
 
-        log.info("private key : {}", privateKey);
-        log.info("hash : {}", hash);
+
         return null;
     }
 
@@ -101,5 +103,12 @@ public class CorporationService {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void recoverFromUserSk(BigInteger sk) {
+        BigInteger pkOwn = mimc7HashService.hash(sk);
+        ECPoint pkEnc = EcUtils.basePointMul(sk);
+        BigInteger ena = mimc7HashService.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
+
     }
 }

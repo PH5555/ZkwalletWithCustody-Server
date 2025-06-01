@@ -31,7 +31,7 @@ import java.util.List;
 @Slf4j
 public class CorporationService {
     private final CorporationRepository corporationRepository;
-    private final Mimc7Utils mimc7HashService;
+    private final Mimc7Utils mimc7Utils;
     private final AESUtils aesUtils;
 
     /**
@@ -77,7 +77,7 @@ public class CorporationService {
 
         // 지갑 생성
         BigInteger privateKey = generateWallet(corporation);
-        BigInteger usk = mimc7HashService.hash(privateKey);
+        BigInteger usk = mimc7Utils.hash(privateKey);
 
         // usk 저장
         aesUtils.encrypt(usk.toString(), corporation.getSalt());
@@ -98,9 +98,8 @@ public class CorporationService {
     }
 
     private void recoverFromUserSk(BigInteger sk) {
-        BigInteger pkOwn = mimc7HashService.hash(sk);
+        BigInteger pkOwn = mimc7Utils.hash(sk);
         ECPoint pkEnc = EcUtils.basePointMul(sk);
-        BigInteger ena = mimc7HashService.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
-
+        BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
     }
 }

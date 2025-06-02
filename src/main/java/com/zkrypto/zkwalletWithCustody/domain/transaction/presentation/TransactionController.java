@@ -20,7 +20,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @GetMapping("")
-    public ApiResponse<List<TransactionResponse>> getTransactions(@AuthenticationPrincipal UUID memberId, @RequestParam Status status, @RequestParam Type type) {
+    public ApiResponse<List<TransactionResponse>> getTransactions(@AuthenticationPrincipal UUID memberId, @RequestParam(required = false) Status status, @RequestParam(required = false) Type type) {
         return ApiResponse.success(transactionService.getTransactions(memberId, status, type));
     }
 

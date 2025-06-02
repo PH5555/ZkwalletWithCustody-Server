@@ -4,6 +4,7 @@ import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.reques
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletCreationResponse;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
@@ -74,6 +75,24 @@ public class CorporationServiceTest {
 
         Corporation findCorporation = corporationRepository.findCorporationByCorporationId(corporation.getCorporationId()).get();
         Assertions.assertThat(findCorporation.getAddress()).isNotNull();
+    }
+
+    @Test
+    void 지갑가져오기() throws Exception {
+        Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토1"));
+        corporationService.createCorporationWallet(new WalletCreationCommand(corporation.getCorporationId()));
+
+        WalletResponse wallet = corporationService.getWallet(corporation.getCorporationId());
+        log.info("address: {}, ena: {}, x: {}, y: {}",wallet.getAddress(), wallet.getEna(), wallet.getPkEncX(), wallet.getPkEncY());
+        Assertions.assertThat(wallet).isNotNull();
+    }
+
+    @Test
+    void 지갑가져오기_실패() throws Exception {
+        Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토1"));
+        Assertions.assertThatThrownBy(() -> {
+            WalletResponse wallet = corporationService.getWallet(corporation.getCorporationId());
+        }).hasMessageContaining("지갑이 존재하지 않습니다.");
     }
 
     @Test

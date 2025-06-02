@@ -84,7 +84,8 @@ public class CorporationService {
         BigInteger usk = mimc7Utils.hash(privateKey);
 
         // usk 저장
-        aesUtils.encrypt(usk.toString(), corporation.getSalt());
+        String cipherUsk = aesUtils.encrypt(usk.toString(), corporation.getSalt());
+        corporation.setSecretKey(cipherUsk);
 
         // ena 등록
         UPK upk = recoverFromUserSk(usk);
@@ -103,7 +104,7 @@ public class CorporationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
 
         // 지갑 있는지 확인
-        if(corporation.getAddress().isEmpty()) {
+        if(StringUtils.isEmpty(corporation.getAddress())) {
             throw new IllegalArgumentException("지갑이 존재하지 않습니다.");
         }
 

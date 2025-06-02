@@ -33,9 +33,10 @@ public class Corporation {
 
     private String secretKey;
 
-    public Corporation(String corporationId, String name) {
-        this.corporationId = corporationId;
+    public Corporation(String name, String address) {
+        this.corporationId = UUID.randomUUID().toString().substring(0,6);
         this.name = name;
+        this.address = address;
     }
 
     public Corporation(String salt, String name, String corporationId) {

@@ -3,6 +3,7 @@ package com.zkrypto.zkwalletWithCustody.corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
@@ -12,6 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -39,6 +41,14 @@ public class CorporationServiceTest {
     }
 
     @Test
+    void 법인생성_실패() {
+        Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토"));
+        Assertions.assertThatThrownBy(() -> {
+            corporationService.createCorporation(new CorporationCreationCommand("지크립토"));
+        }).hasMessageContaining("이미 존재하는 법인입니다.");
+    }
+
+    @Test
     void 법인가져오기() {
         corporationService.createCorporation(new CorporationCreationCommand("지크립토1"));
         corporationService.createCorporation(new CorporationCreationCommand("지크립토2"));
@@ -49,8 +59,19 @@ public class CorporationServiceTest {
     }
 
     @Test
-    void 지갑생성_지갑이미있음() throws Exception {
-        corporationService.createCorporationWallet(new WalletCreationCommand());
+    void 지갑생성_실패() throws Exception {
+        Corporation corporation = new Corporation("지크립토", "test");
+        corporationRepository.save(corporation);
+        Assertions.assertThatThrownBy(() -> {
+            corporationService.createCorporationWallet(new WalletCreationCommand(corporation.getCorporationId()));
+        }).hasMessageContaining("이미 지갑이 존재합니다.");
+    }
+
+    @Test
+    void 지갑생성_성공() throws Exception {
+        Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토1"));
+        corporationService.createCorporationWallet(new WalletCreationCommand(corporation.getCorporationId()));
+        Assertions.assertThat(corporation.getAddress()).isNotNull();
     }
 
     @Test

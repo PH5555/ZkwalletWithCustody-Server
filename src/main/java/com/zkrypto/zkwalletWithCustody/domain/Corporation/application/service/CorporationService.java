@@ -12,6 +12,7 @@ import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7Utils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.SaltUtils;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.ec.ECPoint;
@@ -42,7 +43,7 @@ public class CorporationService {
     @Transactional
     public Corporation createCorporation(CorporationCreationCommand corporationCreationCommand) {
         // 법인 이름 확인
-        if(!corporationRepository.existsCorporationByName(corporationCreationCommand.getName())) {
+        if(corporationRepository.existsCorporationByName(corporationCreationCommand.getName())) {
             throw new IllegalArgumentException("이미 존재하는 법인입니다.");
         }
 
@@ -74,7 +75,7 @@ public class CorporationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
 
         // 지갑 이미 있는지 확인
-        if(!corporation.getAddress().isEmpty()) {
+        if(!StringUtils.isEmpty(corporation.getAddress())) {
             throw new IllegalArgumentException("이미 지갑이 존재합니다.");
         }
 

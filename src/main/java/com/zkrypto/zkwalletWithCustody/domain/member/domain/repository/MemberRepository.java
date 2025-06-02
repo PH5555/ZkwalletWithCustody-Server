@@ -19,6 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
 
     Optional<Member> findMemberByMemberId(UUID memberId);
 
-    @Query("select member from Member member inner join fetch member.corporation")
+    @Query("select member from Member member left join fetch member.corporation")
     Optional<Member> findMemberByMemberIdWithCorporation(UUID memberId);
 }

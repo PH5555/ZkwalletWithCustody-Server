@@ -1,10 +1,12 @@
 package com.zkrypto.zkwalletWithCustody.global.config;
 
+import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.global.jwt.JwtAuthenticationFilter;
 import com.zkrypto.zkwalletWithCustody.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -39,6 +41,14 @@ public class SecurityConfig {
                     // 회원가입, 로그인 관련 API는 Jwt 인증 없이 접근 가능
                     authorizeRequest.requestMatchers("/auth/**").permitAll();
                     authorizeRequest.requestMatchers("/error").permitAll();
+
+                    // 법인 관련 API는 ADMIN만 접근 가능
+                    authorizeRequest.requestMatchers("/corporation").hasAuthority(Role.ROLE_ADMIN.toString());
+                    authorizeRequest.requestMatchers("/corporation/wallet").hasAuthority(Role.ROLE_ADMIN.toString());
+
+                    // 트랜잭션 생성 API는 USER만 가능
+                    authorizeRequest.requestMatchers(HttpMethod.POST, "/transaction").hasAuthority(Role.ROLE_USER.toString());
+
                     // 나머지 모든 API는 Jwt 인증 필요
                     authorizeRequest.anyRequest().authenticated();
                 })

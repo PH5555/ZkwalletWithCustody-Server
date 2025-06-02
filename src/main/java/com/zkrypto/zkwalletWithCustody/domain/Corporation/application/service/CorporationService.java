@@ -4,6 +4,7 @@ import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.reques
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
@@ -65,6 +66,7 @@ public class CorporationService {
     /**
      * 지갑 생성 메서드
      */
+    @Transactional
     public WalletResponse createCorporationWallet(WalletCreationCommand walletCreationCommand) throws Exception {
         // 법인 존재 확인
         Corporation corporation = corporationRepository.findCorporationByCorporationId(walletCreationCommand.getCorporationId())
@@ -83,7 +85,9 @@ public class CorporationService {
         aesUtils.encrypt(usk.toString(), corporation.getSalt());
 
         // ena 등록
+        UPK upk = recoverFromUserSk(usk);
 
+        // registerENA 스마트컨트랙트 호출
 
         return new WalletResponse(privateKey.toString());
     }
@@ -97,9 +101,10 @@ public class CorporationService {
         return privateKeyHex;
     }
 
-    private void recoverFromUserSk(BigInteger sk) {
+    private UPK recoverFromUserSk(BigInteger sk) {
         BigInteger pkOwn = mimc7Utils.hash(sk);
         ECPoint pkEnc = EcUtils.basePointMul(sk);
         BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
+        return new UPK(ena, pkOwn, pkEnc);
     }
 }

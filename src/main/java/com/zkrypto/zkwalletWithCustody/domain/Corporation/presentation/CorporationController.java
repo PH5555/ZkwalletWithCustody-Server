@@ -27,7 +27,7 @@ public class CorporationController {
     }
 
     @PostMapping("/wallet")
-    public ApiResponse<WalletResponse> createCorporationWallet(@RequestBody WalletCreationCommand walletCreationCommand) {
+    public ApiResponse<WalletResponse> createCorporationWallet(@RequestBody WalletCreationCommand walletCreationCommand) throws Exception {
         return ApiResponse.success(corporationService.createCorporationWallet(walletCreationCommand));
     }
 

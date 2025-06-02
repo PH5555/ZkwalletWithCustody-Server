@@ -71,6 +71,7 @@ public class AuthService {
         return tokenResponse;
     }
 
+    @Transactional
     public AuthTokenResponse reissue(ReissueCommand reissueCommand) {
         // 멤버 존재 확인
         Member member = memberRepository.findMemberByMemberId(reissueCommand.getMemberId())
@@ -87,6 +88,7 @@ public class AuthService {
         return tokenResponse;
     }
 
+    @Transactional
     public void signOut(UUID memberId) {
         // 멤버 존재 확인
         Member member = memberRepository.findMemberByMemberId(memberId)

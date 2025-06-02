@@ -22,7 +22,7 @@ public class TestDataHelper implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        Corporation corporation = new Corporation("1234", "지크립토");
-        corporationRepository.save(corporation);
+//        Corporation corporation = new Corporation("1234", "지크립토");
+//        corporationRepository.save(corporation);
     }
 }

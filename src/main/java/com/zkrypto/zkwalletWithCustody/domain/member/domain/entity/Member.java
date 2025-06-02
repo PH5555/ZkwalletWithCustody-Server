@@ -1,6 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.domain.member.domain.entity;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.auth.application.dto.request.SignUpCommand;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import jakarta.persistence.*;
@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Member {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID memberId;
@@ -42,6 +44,7 @@ public class Member {
         this.password = password;
         this.position = position;
         this.role = role;
+        this.corporation = corporation;
     }
 
     public static Member join(SignUpCommand signUpCommand, String hashedPassword, Corporation corporation) {

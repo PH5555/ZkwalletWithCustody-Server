@@ -1,6 +1,6 @@
-package com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response;
+package com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.constant.UPK;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

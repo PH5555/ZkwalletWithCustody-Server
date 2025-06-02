@@ -1,13 +1,13 @@
-package com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service;
+package com.zkrypto.zkwalletWithCustody.domain.corporation.application.service;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletCreationResponse;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.constant.UPK;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationResponse;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletCreationResponse;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletResponse;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7Utils;
@@ -25,8 +25,6 @@ import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.List;
 
 @Service

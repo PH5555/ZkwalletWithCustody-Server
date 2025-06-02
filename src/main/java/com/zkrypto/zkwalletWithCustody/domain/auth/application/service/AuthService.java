@@ -1,7 +1,7 @@
 package com.zkrypto.zkwalletWithCustody.domain.auth.application.service;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.domain.auth.application.dto.request.ReissueCommand;
 import com.zkrypto.zkwalletWithCustody.domain.auth.application.dto.request.SignInCommand;
 import com.zkrypto.zkwalletWithCustody.domain.auth.application.dto.request.SignUpCommand;

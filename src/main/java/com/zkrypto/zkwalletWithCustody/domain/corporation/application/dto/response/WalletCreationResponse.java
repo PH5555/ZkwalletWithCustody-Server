@@ -1,4 +1,4 @@
-package com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response;
+package com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

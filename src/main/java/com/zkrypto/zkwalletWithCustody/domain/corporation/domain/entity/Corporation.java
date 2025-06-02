@@ -1,12 +1,13 @@
-package com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity;
+package com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Corporation {
     @Id
     private String corporationId;
@@ -39,7 +41,7 @@ public class Corporation {
         this.address = address;
     }
 
-    public Corporation(String salt, String name, String corporationId) {
+    public Corporation(String corporationId, String name, String salt) {
         this.salt = salt;
         this.name = name;
         this.corporationId = corporationId;

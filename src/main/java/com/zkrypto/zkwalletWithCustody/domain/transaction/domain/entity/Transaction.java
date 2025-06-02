@@ -7,6 +7,7 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "transactions")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Transaction {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +57,7 @@ public class Transaction {
         this.unSpentNote = unSpentNote;
         this.fromPublicAmount = fromPublicAmount;
         this.fromPrivateAmount = fromPrivateAmount;
+        this.status = Status.NONE;
     }
 
     public static Transaction create(TransactionCreationCommand transactionCreationCommand, Corporation sender, Corporation receiver) {

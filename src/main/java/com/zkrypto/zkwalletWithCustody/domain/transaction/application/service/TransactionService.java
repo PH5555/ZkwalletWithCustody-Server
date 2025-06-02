@@ -12,6 +12,7 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Type;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService {
     private final MemberRepository memberRepository;
     private final CorporationRepository corporationRepository;
@@ -60,26 +62,29 @@ public class TransactionService {
         Member member = memberRepository.findMemberByMemberIdWithCorporation(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
-        List<Transaction> transactions = new ArrayList<>();
-        // 어드민, 일반 유저 분기
-        if(member.getRole().equals(Role.ROLE_ADMIN)) { // 어드민일 경우 status 상관 없이 다 가져오기
-            transactions = transactionRepository.findAll();
+        // 어드민일 경우 status 상관 없이 다 가져오기
+        if(member.getRole() == Role.ROLE_ADMIN) {
+            return transactionRepository.findAllWithCorporation().stream().map(TransactionResponse::from).toList();
         }
-        else if(member.getRole().equals(Role.ROLE_USER)) { // 일반 유저일 경우 status none 인거는 send만, status done 인거는 send, receive 요청한거에 따라
-            if(status.equals(Status.NONE)) {
-                // send
-                transactions = transactionRepository.findTransactionsBySender(member.getCorporation());
+
+        if(member.getRole() == Role.ROLE_USER && status == Status.NONE) {
+            return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(TransactionResponse::from).toList();
+        }
+        else if (member.getRole() == Role.ROLE_USER && status == Status.DONE) {
+            if(type == Type.SEND) {
+                return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
             }
-            else if(status.equals(Status.DONE)) {
-                if(type.equals(Type.SEND)) {
-                    transactions = transactionRepository.findTransactionsBySender(member.getCorporation());
-                }
-                else if(type.equals(Type.RECEIVE)) {
-                    transactions = transactionRepository.findTransactionsByReceiver(member.getCorporation());
-                }
+            else if(type == Type.RECEIVE) {
+                return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
             }
         }
 
-        return transactions.stream().map(TransactionResponse::from).toList();
+        return null;
+    }
+
+    @Transactional
+    public void setTransactionStatus(Long transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId).get();
+        transaction.setStatus(Status.DONE);
     }
 }

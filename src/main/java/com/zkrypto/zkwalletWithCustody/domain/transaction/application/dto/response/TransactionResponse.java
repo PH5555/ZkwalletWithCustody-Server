@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class TransactionResponse {
+    private Long transactionId;
     private int fromPrivateAmount;
     private int fromPublicAmount;
     private int unSpentNote;
@@ -24,7 +25,8 @@ public class TransactionResponse {
     private LocalDateTime signedAt;
     private Status status;
 
-    public TransactionResponse(int fromPrivateAmount, int fromPublicAmount, int unSpentNote, int totalInput, int toPublicAmount, int toPrivateAmount, int totalOutput, int remainingAmount, String receiverAddress, String receiverName, String senderAddress, String senderName, LocalDateTime createdAt, LocalDateTime signedAt, Status status) {
+    public TransactionResponse(Long transactionId, int fromPrivateAmount, int fromPublicAmount, int unSpentNote, int totalInput, int toPublicAmount, int toPrivateAmount, int totalOutput, int remainingAmount, String receiverAddress, String receiverName, String senderAddress, String senderName, LocalDateTime createdAt, LocalDateTime signedAt, Status status) {
+        this.transactionId = transactionId;
         this.fromPrivateAmount = fromPrivateAmount;
         this.fromPublicAmount = fromPublicAmount;
         this.unSpentNote = unSpentNote;
@@ -43,7 +45,7 @@ public class TransactionResponse {
     }
 
     public static TransactionResponse from(Transaction transaction) {
-        return new TransactionResponse(transaction.getFromPrivateAmount(), transaction.getFromPublicAmount(), transaction.getUnSpentNote(),
+        return new TransactionResponse(transaction.getId(), transaction.getFromPrivateAmount(), transaction.getFromPublicAmount(), transaction.getUnSpentNote(),
                 transaction.getTotalInput(), transaction.getToPublicAmount(), transaction.getToPrivateAmount(),
                 transaction.getTotalOutput(), transaction.getRemainingAmount(), transaction.getReceiver().getAddress(),
                 transaction.getReceiver().getName(), transaction.getSender().getAddress(), transaction.getSender().getName(),

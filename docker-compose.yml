@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: zkwalletWithCustody-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: zkwallet
+      MYSQL_DATABASE: zkwallet
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend-network
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zkwalletWithCustody-server
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/zkwallet?rewriteBatchedStatements=true&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: zkwallet
+    depends_on:
+      - mysql
+    networks:
+      - backend-network
+
+volumes:
+  mysql_data:
+
+networks:
+  backend-network:
+    driver: bridge

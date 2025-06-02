@@ -1,22 +1,8 @@
 package com.zkrypto.zkwalletWithCustody.corporation;
 
-import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
-import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
-import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationResponse;
-import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletResponse;
-import com.zkrypto.zkwalletWithCustody.domain.corporation.application.service.CorporationService;
-import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
-import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
-import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j

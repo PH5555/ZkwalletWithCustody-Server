@@ -12,6 +12,7 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Type;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,15 +26,20 @@ public class TransactionService {
     private final MemberRepository memberRepository;
     private final CorporationRepository corporationRepository;
     private final TransactionRepository transactionRepository;
-
+    private final PasswordEncoder passwordEncoder;
     /***
      *  트랜잭션 생성 메서드
      */
     @Transactional
-    public void createTransaction(UUID memberId, TransactionCreationCommand transactionCreationCommand) {
+    public Transaction createTransaction(UUID memberId, TransactionCreationCommand transactionCreationCommand) {
         // 멤버 확인
         Member sender = memberRepository.findMemberByMemberIdWithCorporation(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+
+        // 비밀번호 확인
+        if(!passwordEncoder.matches(transactionCreationCommand.getPassword(), sender.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 불일치합니다.");
+        }
 
         // receiver 확인
         Corporation receiver = corporationRepository.findCorporationsByAddress(transactionCreationCommand.getReceiverAddress())
@@ -42,6 +48,7 @@ public class TransactionService {
         // 트랜잭션 생성
         Transaction transaction = Transaction.create(transactionCreationCommand, sender.getCorporation(), receiver);
         transactionRepository.save(transaction);
+        return transaction;
     }
 
     /***

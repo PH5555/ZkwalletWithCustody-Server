@@ -3,6 +3,7 @@ package com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
@@ -67,7 +68,7 @@ public class CorporationService {
      * 지갑 생성 메서드
      */
     @Transactional
-    public WalletResponse createCorporationWallet(WalletCreationCommand walletCreationCommand) throws Exception {
+    public WalletCreationResponse createCorporationWallet(WalletCreationCommand walletCreationCommand) throws Exception {
         // 법인 존재 확인
         Corporation corporation = corporationRepository.findCorporationByCorporationId(walletCreationCommand.getCorporationId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
@@ -89,10 +90,30 @@ public class CorporationService {
 
         // registerENA 스마트컨트랙트 호출
 
-        return new WalletResponse(privateKey.toString());
+        return new WalletCreationResponse(privateKey.toString());
     }
 
-    public BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+    /**
+     * 지갑 반환 메서드
+     */
+    public WalletResponse getWallet(String corporationId) throws Exception {
+        // 법인 존재 확인
+        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+
+        // 지갑 있는지 확인
+        if(corporation.getAddress().isEmpty()) {
+            throw new IllegalArgumentException("지갑이 존재하지 않습니다.");
+        }
+
+        // upk 생성
+        String usk = aesUtils.decrypt(corporation.getSecretKey(), corporation.getSalt());
+        UPK upk = recoverFromUserSk(new BigInteger(usk));
+
+        return WalletResponse.from(corporation.getAddress(), upk);
+    }
+
+    private BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         ECKeyPair keyPair = Keys.createEcKeyPair();
         BigInteger privateKeyHex = keyPair.getPrivateKey();
         String address = "0x" + Keys.getAddress(keyPair);

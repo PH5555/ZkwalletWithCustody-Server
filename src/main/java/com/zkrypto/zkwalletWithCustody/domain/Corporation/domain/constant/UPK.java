@@ -12,7 +12,7 @@ public class UPK {
     private AffinePoint pkEnc;
 
     @Getter
-    static class AffinePoint {
+    public static class AffinePoint {
         private BigInteger x;
         private BigInteger y;
 
@@ -20,6 +20,7 @@ public class UPK {
             this.x = x;
             this.y = y;
         }
+
     }
 
     public UPK(BigInteger ena, BigInteger pkOwn, ECPoint pkEnc) {

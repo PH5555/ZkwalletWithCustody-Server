@@ -49,7 +49,7 @@ public class CorporationServiceTest {
     }
 
     @Test
-    void 지갑생성() throws Exception {
+    void 지갑생성_지갑이미있음() throws Exception {
         corporationService.createCorporationWallet(new WalletCreationCommand());
     }
 

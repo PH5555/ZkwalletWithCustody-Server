@@ -3,6 +3,7 @@ package com.zkrypto.zkwalletWithCustody.domain.Corporation.presentation;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.WalletCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.CorporationResponse;
+import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.global.response.ApiResponse;
@@ -27,12 +28,12 @@ public class CorporationController {
     }
 
     @PostMapping("/wallet")
-    public ApiResponse<WalletResponse> createCorporationWallet(@RequestBody WalletCreationCommand walletCreationCommand) throws Exception {
+    public ApiResponse<WalletCreationResponse> createCorporationWallet(@RequestBody WalletCreationCommand walletCreationCommand) throws Exception {
         return ApiResponse.success(corporationService.createCorporationWallet(walletCreationCommand));
     }
 
     @GetMapping("/wallet")
-    public void getCorporationWallet() {
-
+    public ApiResponse<WalletResponse> getCorporationWallet(@RequestParam String corporationId) throws Exception {
+        return ApiResponse.success(corporationService.getWallet(corporationId));
     }
 }

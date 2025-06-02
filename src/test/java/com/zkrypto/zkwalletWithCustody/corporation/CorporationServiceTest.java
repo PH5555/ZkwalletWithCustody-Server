@@ -71,7 +71,9 @@ public class CorporationServiceTest {
     void 지갑생성_성공() throws Exception {
         Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토1"));
         corporationService.createCorporationWallet(new WalletCreationCommand(corporation.getCorporationId()));
-        Assertions.assertThat(corporation.getAddress()).isNotNull();
+
+        Corporation findCorporation = corporationRepository.findCorporationByCorporationId(corporation.getCorporationId()).get();
+        Assertions.assertThat(findCorporation.getAddress()).isNotNull();
     }
 
     @Test

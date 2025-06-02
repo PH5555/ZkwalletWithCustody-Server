@@ -1,6 +1,7 @@
 package com.zkrypto.zkwalletWithCustody.global.crypto;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ing.dlt.zkkrypto.ecc.mimc.Mimc7Hash;
@@ -15,12 +16,17 @@ public class Mimc7Utils {
     }
 
     public BigInteger hash(BigInteger input) {
-        byte[] hash = mimc7.hash(input.toByteArray());
+        BigInteger mod = input.mod(mimc7.getR());
+        byte[] hash = mimc7.hash(mod.toByteArray());
         return new BigInteger(hash);
     }
 
     public BigInteger hash(List<BigInteger> inputs) {
-        byte[] hash = mimc7.hash(inputs);
+        List<BigInteger> modResult = new ArrayList<>();
+        for (BigInteger input : inputs) {
+            modResult.add(input.mod(mimc7.getR()));
+        }
+        byte[] hash = mimc7.hash(modResult);
         return new BigInteger(hash);
     }
 }

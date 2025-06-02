@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/zkwallet?rewriteBatchedStatements=true
+    url: jdbc:mysql://localhost:3306/zkwallet?rewriteBatchedStatements=true&serverTimezone=Asia/Seoul
     username: root
-    password: djib1213ppoo
+    password: zkwallet
 
   jpa:
     hibernate:

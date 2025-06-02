@@ -1,6 +1,6 @@
-package com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository;
+package com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +16,6 @@ public interface CorporationRepository extends JpaRepository<Corporation, UUID> 
     List<Corporation> findAllWithMembers();
 
     boolean existsCorporationByName(String name);
+
+    Optional<Corporation> findCorporationsByAddress(String address);
 }

@@ -1,18 +1,11 @@
 package com.zkrypto.zkwalletWithCustody.test;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

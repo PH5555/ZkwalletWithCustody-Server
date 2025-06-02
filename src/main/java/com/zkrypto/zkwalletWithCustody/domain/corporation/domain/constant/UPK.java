@@ -1,4 +1,4 @@
-package com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.constant;
+package com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant;
 
 import lombok.Getter;
 import org.bouncycastle.math.ec.ECPoint;

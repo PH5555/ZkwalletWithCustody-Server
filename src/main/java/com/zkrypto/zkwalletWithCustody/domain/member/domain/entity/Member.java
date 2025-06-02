@@ -1,6 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.domain.member.domain.entity;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.auth.application.dto.request.SignUpCommand;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import jakarta.persistence.*;

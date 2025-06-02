@@ -1,6 +1,6 @@
-package com.zkrypto.zkwalletWithCustody.domain.Corporation.domain.entity;
+package com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity;
 
-import com.zkrypto.zkwalletWithCustody.domain.Corporation.application.dto.request.CorporationCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -49,6 +49,11 @@ public class SecurityConfig {
                     // 트랜잭션 생성 API는 USER만 가능
                     authorizeRequest.requestMatchers(HttpMethod.POST, "/transaction").hasAuthority(Role.ROLE_USER.toString());
 
+                    // Swagger 관련 설정
+                    authorizeRequest.requestMatchers("/v3/api-docs/**").permitAll();
+                    authorizeRequest.requestMatchers("/swagger-resources/**").permitAll();
+                    authorizeRequest.requestMatchers("/swagger-ui/**").permitAll();
+
                     // 나머지 모든 API는 Jwt 인증 필요
                     authorizeRequest.anyRequest().authenticated();
                 })

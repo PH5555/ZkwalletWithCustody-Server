@@ -1,21 +1,30 @@
 package com.zkrypto.zkwalletWithCustody.corporation;
 
 
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.service.CorporationService;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j
 public class CorporationServiceTest {
 
-//    @Autowired
-//    private CorporationService corporationService;
-//
-//    @Autowired
-//    private CorporationRepository corporationRepository;
-//
-//    @Autowired
-//    private AESUtils aesUtils;
+    @Autowired
+    private CorporationService corporationService;
+
+    @Autowired
+    private CorporationRepository corporationRepository;
+
+    @Autowired
+    private AESUtils aesUtils;
 //
 //    @Test
 //    void 법인생성() {
@@ -52,14 +61,14 @@ public class CorporationServiceTest {
 //        }).hasMessageContaining("이미 지갑이 존재합니다.");
 //    }
 //
-//    @Test
-//    void 지갑생성_성공() throws Exception {
-//        Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토1"));
-//        corporationService.createCorporationWallet(new WalletCreationCommand(corporation.getCorporationId()));
-//
-//        Corporation findCorporation = corporationRepository.findCorporationByCorporationId(corporation.getCorporationId()).get();
-//        Assertions.assertThat(findCorporation.getAddress()).isNotNull();
-//    }
+    @Test
+    void 지갑생성_성공() throws Exception {
+        Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토1"));
+        corporationService.createCorporationWallet(new WalletCreationCommand(corporation.getCorporationId()));
+
+        Corporation findCorporation = corporationRepository.findCorporationByCorporationId(corporation.getCorporationId()).get();
+        Assertions.assertThat(findCorporation.getAddress()).isNotNull();
+    }
 //
 //    @Test
 //    void 지갑가져오기() throws Exception {

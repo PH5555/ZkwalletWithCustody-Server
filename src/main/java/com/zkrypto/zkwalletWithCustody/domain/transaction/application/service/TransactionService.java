@@ -6,6 +6,7 @@ import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.repository.MemberRepository;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionUpdateCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.response.TransactionResponse;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Type;
@@ -83,8 +84,9 @@ public class TransactionService {
     }
 
     @Transactional
-    public void setTransactionStatus(Long transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId).get();
+    public void updateTransaction(TransactionUpdateCommand transactionUpdateCommand) {
+        Transaction transaction = transactionRepository.findById(transactionUpdateCommand.getCorporationId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
         transaction.setStatus(Status.DONE);
     }
 }

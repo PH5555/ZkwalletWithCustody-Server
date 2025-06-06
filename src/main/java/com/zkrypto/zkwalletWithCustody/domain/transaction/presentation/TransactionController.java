@@ -4,6 +4,7 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.respon
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionUpdateCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.response.TransactionResponse;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.service.TransactionService;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status;
@@ -77,5 +78,30 @@ public class TransactionController {
     @PostMapping("")
     public void createTransaction(@AuthenticationPrincipal UUID memberId, @RequestBody TransactionCreationCommand transactionCreationCommand) {
         transactionService.createTransaction(memberId, transactionCreationCommand);
+    }
+
+
+    @Operation(
+            summary = "트랜잭션 서명 완료 API",
+            description = "클라이언트에서 트랜잭션 전송을 완료하고 이 API를 호출하면 됩니다.",
+            security = {
+                    @SecurityRequirement(name = "bearerAuth")
+            },
+            parameters = {
+                    @Parameter(
+                            in = ParameterIn.HEADER,
+                            name = "Authorization",
+                            description = "Bearer 토큰 (ROLE_ADMIN 사용자만 접근 가능)",
+                            required = true
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
+                    content = {@Content(schema = @Schema(implementation = Void.class))}),
+    })
+    @PutMapping("")
+    public void updateTransaction(@RequestBody TransactionUpdateCommand transactionUpdateCommand) {
+        transactionService.updateTransaction(transactionUpdateCommand);
     }
 }

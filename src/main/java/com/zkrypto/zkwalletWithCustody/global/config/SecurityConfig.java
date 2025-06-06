@@ -49,6 +49,9 @@ public class SecurityConfig {
                     // 트랜잭션 생성 API는 USER만 가능
                     authorizeRequest.requestMatchers(HttpMethod.POST, "/transaction").hasAuthority(Role.ROLE_USER.toString());
 
+                    // 트랜잭션 완료 API는 ADMIN만 가능
+                    authorizeRequest.requestMatchers(HttpMethod.PUT, "/transaction").hasAuthority(Role.ROLE_ADMIN.toString());
+
                     // Swagger 관련 설정
                     authorizeRequest.requestMatchers("/v3/api-docs/**").permitAll();
                     authorizeRequest.requestMatchers("/swagger-resources/**").permitAll();

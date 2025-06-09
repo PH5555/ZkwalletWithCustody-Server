@@ -12,14 +12,18 @@ import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7Utils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.SaltUtils;
+import com.zkrypto.zkwalletWithCustody.global.web3.Groth16AltBN128Mixer;
+import com.zkrypto.zkwalletWithCustody.global.web3.Web3Service;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.ec.ECPoint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
+import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -34,6 +38,10 @@ public class CorporationService {
     private final CorporationRepository corporationRepository;
     private final Mimc7Utils mimc7Utils;
     private final AESUtils aesUtils;
+    private final Web3Service web3Service;
+
+    @Value("${contract.mixer.address}")
+    private String registerUserContractAddress;
 
     /**
      * 법인 생성 메서드
@@ -80,6 +88,7 @@ public class CorporationService {
         // 지갑 생성
         BigInteger privateKey = generateWallet(corporation);
         BigInteger usk = mimc7Utils.hash(privateKey);
+        log.info(privateKey.toString());
 
         // usk 저장
         String cipherUsk = aesUtils.encrypt(usk.toString(), corporation.getSalt());
@@ -89,7 +98,9 @@ public class CorporationService {
         UPK upk = recoverFromUserSk(usk);
 
         // registerENA 스마트컨트랙트 호출
-
+        log.info(corporation.getAddress());
+        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey.toString(16), registerUserContractAddress);
+        smartContract.registerUser(Numeric.toBigInt(corporation.getAddress()), upk.getPkOwn(), List.of(upk.getPkEnc().getX(), upk.getPkEnc().getY())).send();
         return new WalletCreationResponse(privateKey.toString());
     }
 
@@ -124,7 +135,7 @@ public class CorporationService {
 
     private UPK recoverFromUserSk(BigInteger sk) {
         BigInteger pkOwn = mimc7Utils.hash(sk);
-        ECPoint pkEnc = EcUtils.basePointMul(sk);
+        ECPoint pkEnc = EcUtils.basePointMulCustom(sk);
         BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
         return new UPK(ena, pkOwn, pkEnc);
     }

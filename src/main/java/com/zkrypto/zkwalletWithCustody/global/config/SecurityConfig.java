@@ -43,14 +43,18 @@ public class SecurityConfig {
                     authorizeRequest.requestMatchers("/error").permitAll();
 
                     // 법인 관련 API는 ADMIN만 접근 가능
-                    authorizeRequest.requestMatchers("/corporation").hasAuthority(Role.ROLE_ADMIN.toString());
-                    authorizeRequest.requestMatchers("/corporation/wallet").hasAuthority(Role.ROLE_ADMIN.toString());
+//                    authorizeRequest.requestMatchers("/corporation").hasAuthority(Role.ROLE_ADMIN.toString());
+//                    authorizeRequest.requestMatchers("/corporation/wallet").hasAuthority(Role.ROLE_ADMIN.toString());
+                    authorizeRequest.requestMatchers("/corporation").permitAll();
+                    authorizeRequest.requestMatchers("/corporation/wallet").permitAll();
 
                     // 트랜잭션 생성 API는 USER만 가능
                     authorizeRequest.requestMatchers(HttpMethod.POST, "/transaction").hasAuthority(Role.ROLE_USER.toString());
 
                     // 트랜잭션 완료 API는 ADMIN만 가능
-                    authorizeRequest.requestMatchers(HttpMethod.PUT, "/transaction").hasAuthority(Role.ROLE_ADMIN.toString());
+//                    authorizeRequest.requestMatchers(HttpMethod.PUT, "/transaction").hasAuthority(Role.ROLE_ADMIN.toString());
+                    authorizeRequest.requestMatchers(HttpMethod.PUT, "/transaction").permitAll();
+                    authorizeRequest.requestMatchers(HttpMethod.GET, "/transaction").permitAll();
 
                     // Swagger 관련 설정
                     authorizeRequest.requestMatchers("/v3/api-docs/**").permitAll();

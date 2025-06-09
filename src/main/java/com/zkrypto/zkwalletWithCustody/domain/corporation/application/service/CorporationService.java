@@ -88,19 +88,15 @@ public class CorporationService {
         // 지갑 생성
         BigInteger privateKey = generateWallet(corporation);
         BigInteger usk = mimc7Utils.hash(privateKey);
-        log.info(privateKey.toString());
 
         // usk 저장
         String cipherUsk = aesUtils.encrypt(usk.toString(), corporation.getSalt());
         corporation.setSecretKey(cipherUsk);
 
         // ena 등록
-        UPK upk = recoverFromUserSk(usk);
-
-        // registerENA 스마트컨트랙트 호출
-        log.info(corporation.getAddress());
-        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey.toString(16), registerUserContractAddress);
-        smartContract.registerUser(Numeric.toBigInt(corporation.getAddress()), upk.getPkOwn(), List.of(upk.getPkEnc().getX(), upk.getPkEnc().getY())).send();
+//        UPK upk = recoverFromUserSk(usk);
+//        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey.toString(16), registerUserContractAddress);
+//        smartContract.registerUser(Numeric.toBigInt(corporation.getAddress()), upk.getPkOwn(), List.of(upk.getPkEnc().getX(), upk.getPkEnc().getY())).send();
         return new WalletCreationResponse(privateKey.toString());
     }
 

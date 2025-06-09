@@ -59,14 +59,14 @@ public class TransactionService {
      */
     @Transactional
     public List<TransactionResponse> getTransactions(UUID memberId, Status status, Type type) {
+        // 어드민일 경우 status 상관 없이 다 가져오기
+        if(memberId == null) {
+            return transactionRepository.findAllWithCorporation().stream().map(TransactionResponse::from).toList();
+        }
+
         // 멤버 확인
         Member member = memberRepository.findMemberByMemberIdWithCorporation(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
-
-        // 어드민일 경우 status 상관 없이 다 가져오기
-        if(member.getRole() == Role.ROLE_ADMIN) {
-            return transactionRepository.findAllWithCorporation().stream().map(TransactionResponse::from).toList();
-        }
 
         if(member.getRole() == Role.ROLE_USER && status == Status.NONE) {
             return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(TransactionResponse::from).toList();
@@ -85,7 +85,7 @@ public class TransactionService {
 
     @Transactional
     public void updateTransaction(TransactionUpdateCommand transactionUpdateCommand) {
-        Transaction transaction = transactionRepository.findById(transactionUpdateCommand.getCorporationId())
+        Transaction transaction = transactionRepository.findById(transactionUpdateCommand.getTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
         transaction.setStatus(Status.DONE);
     }

@@ -19,11 +19,11 @@ public class TestDataHelper implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        Member member = new Member();
-        member.setName("관리자");
-        member.setRole(Role.ROLE_ADMIN);
-        member.setLoginId("zkrypto");
-        member.setPassword(passwordEncoder.encode("1234"));
-        memberRepository.save(member);
+//        Member member = new Member();
+//        member.setName("관리자");
+//        member.setRole(Role.ROLE_ADMIN);
+//        member.setLoginId("zkrypto");
+//        member.setPassword(passwordEncoder.encode("1234"));
+//        memberRepository.save(member);
     }
 }

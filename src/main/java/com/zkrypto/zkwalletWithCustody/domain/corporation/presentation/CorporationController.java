@@ -28,18 +28,7 @@ public class CorporationController {
     private final CorporationService corporationService;
 
     @Operation(
-            summary = "법인 생성 API",
-            security = {
-                    @SecurityRequirement(name = "bearerAuth")
-            },
-            parameters = {
-                    @Parameter(
-                            in = ParameterIn.HEADER,
-                            name = "Authorization",
-                            description = "Bearer 토큰 (ROLE_ADMIN 사용자만 접근 가능)",
-                            required = true
-                    )
-            }
+            summary = "법인 생성 API"
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
@@ -52,18 +41,7 @@ public class CorporationController {
 
     @Operation(
             summary = "법인 조회 API",
-            description = "존재하는 법인을 모두 조회합니다.",
-            security = {
-                    @SecurityRequirement(name = "bearerAuth")
-            },
-            parameters = {
-                    @Parameter(
-                            in = ParameterIn.HEADER,
-                            name = "Authorization",
-                            description = "Bearer 토큰 (ROLE_ADMIN 사용자만 접근 가능)",
-                            required = true
-                    )
-            }
+            description = "존재하는 법인을 모두 조회합니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
@@ -77,18 +55,7 @@ public class CorporationController {
 
     @Operation(
             summary = "월렛 생성 API",
-            description = "EOA 월렛과 ENA 월렛을 생성해주는 API 입니다. ENA 월렛은 DB와 블록체인에 저장되고, EOA private key를 응답으로 받아 콜드월렛에 저장합니다.",
-            security = {
-                    @SecurityRequirement(name = "bearerAuth")
-            },
-            parameters = {
-                    @Parameter(
-                            in = ParameterIn.HEADER,
-                            name = "Authorization",
-                            description = "Bearer 토큰 (ROLE_ADMIN 사용자만 접근 가능)",
-                            required = true
-                    )
-            }
+            description = "EOA 월렛과 ENA 월렛을 생성해주는 API 입니다. ENA 월렛은 DB와 블록체인에 저장되고, EOA private key를 응답으로 받아 콜드월렛에 저장합니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
@@ -101,18 +68,7 @@ public class CorporationController {
 
     @Operation(
             summary = "월렛 조회 API",
-            description = "EOA address와 ENA 월렛 정보를 반환해주는 API 입니다.",
-            security = {
-                    @SecurityRequirement(name = "bearerAuth")
-            },
-            parameters = {
-                    @Parameter(
-                            in = ParameterIn.HEADER,
-                            name = "Authorization",
-                            description = "Bearer 토큰 (ROLE_ADMIN 사용자만 접근 가능)",
-                            required = true
-                    )
-            }
+            description = "EOA address와 ENA 월렛 정보를 반환해주는 API 입니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",

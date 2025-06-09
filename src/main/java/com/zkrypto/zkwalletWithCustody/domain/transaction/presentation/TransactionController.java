@@ -35,25 +35,14 @@ public class TransactionController {
 
     @Operation(
             summary = "트랜잭션 조회 API",
-            description = "ADMIN은 트랜잭션 상태와 상관없이 모든 트랜잭션을 조회합니다. USER는 대기중인 트랜잭션을 요청했을 경우는 자신이 보낸 트랜잭션만 조회 가능하고, 서명 완료된 트랜잭션을 요청했을 경우에는 내가 보낸 트랜잭션과 내가 받은 트랜잭션을 모두 조회 가능합니다.",
-            security = {
-                    @SecurityRequirement(name = "bearerAuth")
-            },
-            parameters = {
-                    @Parameter(
-                            in = ParameterIn.HEADER,
-                            name = "Authorization",
-                            description = "Bearer 토큰",
-                            required = true
-                    )
-            }
+            description = "ADMIN은 트랜잭션 상태와 상관없이 모든 트랜잭션을 조회합니다. USER는 대기중인 트랜잭션을 요청했을 경우는 자신이 보낸 트랜잭션만 조회 가능하고, 서명 완료된 트랜잭션을 요청했을 경우에는 내가 보낸 트랜잭션과 내가 받은 트랜잭션을 모두 조회 가능합니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
                     content = {@Content(array = @ArraySchema(schema = @Schema(implementation = TransactionResponse.class)))}),
     })
     @GetMapping("")
-    public ApiResponse<List<TransactionResponse>> getTransactions(@AuthenticationPrincipal UUID memberId, @RequestParam(required = false) Status status, @RequestParam(required = false) Type type) {
+    public ApiResponse<List<TransactionResponse>> getTransactions(@Parameter(description = "값을 넣을 경우 USER, 넣지 않을 경우 ADMIN", required = false) @RequestParam(required = false) UUID memberId,@Parameter(description = "DONE이면 완료된것만 가져오기(트랜잭션 내역 페이지), NONE이면 완료되지 않은것만 가져오기(트랜잭션 요청 페이지)", required = false) @RequestParam(required = false) Status status, @Parameter(description = "RECEIVE면 받은거 가져오기, SEND면 보낸거 가져오기,", required = false) @RequestParam(required = false) Type type) {
         return ApiResponse.success(transactionService.getTransactions(memberId, status, type));
     }
 
@@ -83,18 +72,7 @@ public class TransactionController {
 
     @Operation(
             summary = "트랜잭션 서명 완료 API",
-            description = "클라이언트에서 트랜잭션 전송을 완료하고 이 API를 호출하면 됩니다.",
-            security = {
-                    @SecurityRequirement(name = "bearerAuth")
-            },
-            parameters = {
-                    @Parameter(
-                            in = ParameterIn.HEADER,
-                            name = "Authorization",
-                            description = "Bearer 토큰 (ROLE_ADMIN 사용자만 접근 가능)",
-                            required = true
-                    )
-            }
+            description = "클라이언트에서 트랜잭션 전송을 완료하고 이 API를 호출하면 됩니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",

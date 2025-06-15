@@ -82,4 +82,6 @@ public class TransactionController {
     public void updateTransaction(@RequestBody TransactionUpdateCommand transactionUpdateCommand) {
         transactionService.updateTransaction(transactionUpdateCommand);
     }
+
+    // TODO: 트랜잭션 서명 api
 }

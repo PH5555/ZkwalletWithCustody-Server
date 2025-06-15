@@ -14,11 +14,10 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transact
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +29,7 @@ public class TransactionService {
     private final CorporationRepository corporationRepository;
     private final TransactionRepository transactionRepository;
     private final PasswordEncoder passwordEncoder;
+
     /***
      *  트랜잭션 생성 메서드
      */

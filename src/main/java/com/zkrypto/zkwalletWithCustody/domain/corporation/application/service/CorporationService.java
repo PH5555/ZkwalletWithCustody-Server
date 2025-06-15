@@ -38,10 +38,6 @@ public class CorporationService {
     private final CorporationRepository corporationRepository;
     private final Mimc7Utils mimc7Utils;
     private final AESUtils aesUtils;
-    private final Web3Service web3Service;
-
-    @Value("${contract.mixer.address}")
-    private String registerUserContractAddress;
 
     /**
      * 법인 생성 메서드
@@ -93,10 +89,9 @@ public class CorporationService {
         String cipherUsk = aesUtils.encrypt(usk.toString(), corporation.getSalt());
         corporation.setSecretKey(cipherUsk);
 
-        // ena 등록
-//        UPK upk = recoverFromUserSk(usk);
-//        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey.toString(16), registerUserContractAddress);
-//        smartContract.registerUser(Numeric.toBigInt(corporation.getAddress()), upk.getPkOwn(), List.of(upk.getPkEnc().getX(), upk.getPkEnc().getY())).send();
+        // 트랜잭션 조회 시작
+
+
         return new WalletCreationResponse(privateKey.toString());
     }
 

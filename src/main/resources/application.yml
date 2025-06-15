@@ -28,6 +28,7 @@ jwt:
 ethereum:
   rpc:
     url: http://127.0.0.1:8545
+  privateKey: "0x0000"
 contract:
   mixer:
     address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"

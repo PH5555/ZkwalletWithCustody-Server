@@ -14,7 +14,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public MemberResponse getMember(UUID memberId) {
-        Member member = memberRepository.findMemberByMemberId(memberId)
+        Member member = memberRepository.findMemberByMemberIdWithCorporation(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         return MemberResponse.from(member);

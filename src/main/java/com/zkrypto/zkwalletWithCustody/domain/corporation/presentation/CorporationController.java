@@ -2,6 +2,7 @@ package com.zkrypto.zkwalletWithCustody.domain.corporation.presentation;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationMembersResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletResponse;
@@ -88,7 +89,7 @@ public class CorporationController {
                     content = {@Content(schema = @Schema(implementation = WalletResponse.class))}),
     })
     @GetMapping("/members")
-    public ApiResponse<> getCorporationMembers(@RequestParam String corporationId) {
+    public ApiResponse<List<CorporationMembersResponse>> getCorporationMembers(@RequestParam String corporationId) {
         return ApiResponse.success(corporationService.getAllMembers(corporationId));
     }
 

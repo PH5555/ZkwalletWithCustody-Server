@@ -105,6 +105,7 @@ public class CorporationService {
     /**
      * 지갑 반환 메서드
      */
+    @Transactional
     public WalletResponse getWallet(String corporationId) throws Exception {
         // 법인 존재 확인
         Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
@@ -125,9 +126,10 @@ public class CorporationService {
     /**
      * 모든 멤버 반환 메서드
      */
+    @Transactional
     public List<CorporationMembersResponse> getAllMembers(String corporationId) {
         // 법인 존재 확인
-        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
+        Corporation corporation = corporationRepository.findWithMembersByCorporationId(corporationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
 
         return corporation.getMembers().stream().map(member -> new CorporationMembersResponse(member.getName(), member.getPosition(), member.getCreatedAt())).toList();

@@ -13,8 +13,9 @@ public class MemberResponse {
     private String name;
     private String position;
     private String corporationName;
+    private String corporationId;
 
     public static MemberResponse from(Member member) {
-        return new MemberResponse(member.getMemberId(), member.getName(), member.getPosition(), member.getCorporation().getName());
+        return new MemberResponse(member.getMemberId(), member.getName(), member.getPosition(), member.getCorporation().getName(), member.getCorporation().getCorporationId());
     }
 }

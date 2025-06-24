@@ -10,5 +10,6 @@ import java.time.LocalDateTime;
 public class CorporationMembersResponse {
     private String name;
     private String position;
-    private LocalDateTime date;
+    private LocalDateTime registrationDate;
+    private String didAddress;
 }

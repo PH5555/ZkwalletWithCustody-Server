@@ -132,7 +132,7 @@ public class CorporationService {
         Corporation corporation = corporationRepository.findWithMembersByCorporationId(corporationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
 
-        return corporation.getMembers().stream().map(member -> new CorporationMembersResponse(member.getName(), member.getPosition(), member.getCreatedAt())).toList();
+        return corporation.getMembers().stream().map(member -> new CorporationMembersResponse(member.getName(), member.getPosition(), member.getCreatedAt(), member.getMemberId().toString())).toList();
     }
 
     private BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {

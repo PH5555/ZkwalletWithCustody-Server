@@ -37,7 +37,7 @@ public class AuthController {
         authService.signUp(signUpCommand);
     }
 
-    @Operation(summary = "회원가입 API")
+    @Operation(summary = "로그인 API")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
                     content = {@Content(schema = @Schema(implementation = AuthTokenResponse.class))}),
@@ -47,7 +47,7 @@ public class AuthController {
         return ApiResponse.success(authService.signIn(signInCommand));
     }
 
-    @Operation(summary = "회원가입 API")
+    @Operation(summary = "토큰 재발급 API")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
                     content = {@Content(schema = @Schema(implementation = AuthTokenResponse.class))}),

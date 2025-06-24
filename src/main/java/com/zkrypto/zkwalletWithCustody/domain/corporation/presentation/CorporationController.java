@@ -88,7 +88,7 @@ public class CorporationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
                     content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CorporationMembersResponse.class)))}),
     })
-    @GetMapping("/members")
+    @GetMapping("/member")
     public ApiResponse<List<CorporationMembersResponse>> getCorporationMembers(@RequestParam String corporationId) {
         return ApiResponse.success(corporationService.getAllMembers(corporationId));
     }

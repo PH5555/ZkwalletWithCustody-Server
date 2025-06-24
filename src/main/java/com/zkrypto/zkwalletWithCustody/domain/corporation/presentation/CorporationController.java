@@ -78,4 +78,18 @@ public class CorporationController {
     public ApiResponse<WalletResponse> getCorporationWallet(@RequestParam String corporationId) throws Exception {
         return ApiResponse.success(corporationService.getWallet(corporationId));
     }
+
+    @Operation(
+            summary = "법인 멤버 조회 API",
+            description = "법인의 모든 멤버를 조회하는 API입니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
+                    content = {@Content(schema = @Schema(implementation = WalletResponse.class))}),
+    })
+    @GetMapping("/members")
+    public ApiResponse<> getCorporationMembers(@RequestParam String corporationId) {
+        return ApiResponse.success(corporationService.getAllMembers(corporationId));
+    }
+
 }

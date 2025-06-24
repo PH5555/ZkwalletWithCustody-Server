@@ -2,12 +2,14 @@ package com.zkrypto.zkwalletWithCustody.domain.corporation.application.service;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationMembersResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7Utils;
@@ -120,6 +122,17 @@ public class CorporationService {
         return WalletResponse.from(corporation.getAddress(), upk);
     }
 
+    /**
+     * 모든 멤버 반환 메서드
+     */
+    public List<CorporationMembersResponse> getAllMembers(String corporationId) {
+        // 법인 존재 확인
+        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+
+        return corporation.getMembers().stream().map(member -> new CorporationMembersResponse(member.getName(), member.getPosition(), member.getCreatedAt())).toList();
+    }
+
     private BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         ECKeyPair keyPair = Keys.createEcKeyPair();
         BigInteger privateKeyHex = keyPair.getPrivateKey();
@@ -135,4 +148,5 @@ public class CorporationService {
         BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
         return new UPK(ena, pkOwn, pkEnc);
     }
+
 }

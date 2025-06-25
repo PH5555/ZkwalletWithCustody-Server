@@ -28,7 +28,7 @@ public class AuditKey {
         this.sk = sk;
     }
 
-    static AuditKey keyGen() {
+    public static AuditKey keyGen() {
         BigInteger sk = FieldUtils.randomFieldElement();
         ECPoint ecPoint = EcUtils.basePointMulCustom(sk);
         return new AuditKey(ecPoint.getAffineXCoord().toBigInteger(), ecPoint.getAffineYCoord().toBigInteger(), sk);

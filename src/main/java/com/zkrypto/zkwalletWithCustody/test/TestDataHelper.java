@@ -1,5 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.test;
 
+import com.zkrypto.zkwalletWithCustody.domain.audit.application.service.AuditService;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.repository.MemberRepository;
@@ -13,17 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TestDataHelper implements ApplicationRunner {
-    private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
     @Override
-    @Transactional
     public void run(ApplicationArguments args) throws Exception {
-//        Member member = new Member();
-//        member.setName("관리자");
-//        member.setRole(Role.ROLE_ADMIN);
-//        member.setLoginId("zkrypto");
-//        member.setPassword(passwordEncoder.encode("1234"));
-//        memberRepository.save(member);
+//        auditService.createAuditor();
     }
 }

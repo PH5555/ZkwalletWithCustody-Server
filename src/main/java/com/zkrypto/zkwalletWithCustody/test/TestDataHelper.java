@@ -18,6 +18,6 @@ public class TestDataHelper implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        auditService.createAuditor();
+//        auditService.createAuditor();
     }
 }

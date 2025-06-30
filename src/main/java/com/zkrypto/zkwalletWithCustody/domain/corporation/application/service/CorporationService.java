@@ -99,7 +99,7 @@ public class CorporationService {
 //        UPK upk = recoverFromUserSk(usk);
 //        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey.toString(16), registerUserContractAddress);
 //        smartContract.registerUser(Numeric.toBigInt(corporation.getAddress()), upk.getPkOwn(), List.of(upk.getPkEnc().getX(), upk.getPkEnc().getY())).send();
-        return new WalletCreationResponse(privateKey.toString());
+        return new WalletCreationResponse(privateKey.toString(16));
     }
 
     /**
@@ -137,11 +137,11 @@ public class CorporationService {
 
     private BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         ECKeyPair keyPair = Keys.createEcKeyPair();
-        BigInteger privateKeyHex = keyPair.getPrivateKey();
+        BigInteger privateKey = keyPair.getPrivateKey();
         String address = "0x" + Keys.getAddress(keyPair);
 
         corporation.setAddress(address);
-        return privateKeyHex;
+        return privateKey;
     }
 
     private UPK recoverFromUserSk(BigInteger sk) {

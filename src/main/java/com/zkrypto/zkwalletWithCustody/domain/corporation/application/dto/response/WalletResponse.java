@@ -12,8 +12,9 @@ public class WalletResponse {
     private String pkOwn;
     private String pkEncX;
     private String pkEncY;
+    private String sk;
 
-    public static WalletResponse from(String address, UPK upk) {
-        return new WalletResponse(address, upk.getEna().toString(), upk.getPkOwn().toString(), upk.getPkEnc().getX().toString(), upk.getPkEnc().getY().toString());
+    public static WalletResponse from(String address, UPK upk, String sk) {
+        return new WalletResponse(address, upk.getEna().toString(), upk.getPkOwn().toString(), upk.getPkEnc().getX().toString(), upk.getPkEnc().getY().toString(), sk);
     }
 }

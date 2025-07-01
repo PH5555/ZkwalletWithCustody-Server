@@ -120,7 +120,7 @@ public class CorporationService {
         String usk = aesUtils.decrypt(corporation.getSecretKey(), corporation.getSalt());
         UPK upk = recoverFromUserSk(new BigInteger(usk));
 
-        return WalletResponse.from(corporation.getAddress(), upk);
+        return WalletResponse.from(corporation.getAddress(), upk, usk);
     }
 
     /**

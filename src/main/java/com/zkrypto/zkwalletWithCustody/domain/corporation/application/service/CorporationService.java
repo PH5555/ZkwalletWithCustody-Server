@@ -10,9 +10,9 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
+import com.zkrypto.zkwalletWithCustody.global.crypto.constant.MiMC7;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.EcUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.utils.Mimc7Utils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.SaltUtils;
 import com.zkrypto.zkwalletWithCustody.global.web3.Web3Service;
 import io.micrometer.common.util.StringUtils;
@@ -34,7 +34,6 @@ import java.util.List;
 @Slf4j
 public class CorporationService {
     private final CorporationRepository corporationRepository;
-    private final Mimc7Utils mimc7Utils;
     private final AESUtils aesUtils;
     private final Web3Service web3Service;
 
@@ -85,7 +84,7 @@ public class CorporationService {
 
         // 지갑 생성
         BigInteger privateKey = generateWallet(corporation);
-        BigInteger usk = mimc7Utils.hash(privateKey);
+        BigInteger usk = deriveUskFromPrivateKey(privateKey);
 
         // usk 저장
         String cipherUsk = aesUtils.encrypt(usk.toString(), corporation.getSalt());
@@ -141,10 +140,16 @@ public class CorporationService {
     }
 
     private UPK recoverFromUserSk(BigInteger sk) {
-        BigInteger pkOwn = mimc7Utils.hash(sk);
+        MiMC7 mimc = new MiMC7();
+        BigInteger pkOwn = mimc.hash(sk);
         AffinePoint pkEnc = EcUtils.basePointMul(sk);
-        BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getX(), pkEnc.getY()));
+        BigInteger ena = mimc.hash(pkOwn, pkEnc.getX(), pkEnc.getY());
         return new UPK(ena, pkOwn, pkEnc);
+    }
+
+    private BigInteger deriveUskFromPrivateKey(BigInteger privateKey) {
+        MiMC7 mimc = new MiMC7();
+        return mimc.hash(privateKey);
     }
 
 }

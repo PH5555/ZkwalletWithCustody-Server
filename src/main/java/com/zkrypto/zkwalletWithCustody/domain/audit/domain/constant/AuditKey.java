@@ -1,9 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.domain.audit.domain.constant;
 
-import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.FieldUtils;
 import lombok.Getter;
-import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 
@@ -28,9 +25,9 @@ public class AuditKey {
         this.sk = sk;
     }
 
-    public static AuditKey keyGen() {
-        BigInteger sk = FieldUtils.randomFieldElement();
-        ECPoint ecPoint = EcUtils.basePointMulCustom(sk);
-        return new AuditKey(ecPoint.getAffineXCoord().toBigInteger(), ecPoint.getAffineYCoord().toBigInteger(), sk);
-    }
+//    public static AuditKey keyGen() {
+//        BigInteger sk = FieldUtils.randomFieldElement();
+//        ECPoint ecPoint = EcUtils.basePointMulCustom(sk);
+//        return new AuditKey(ecPoint.getAffineXCoord().toBigInteger(), ecPoint.getAffineYCoord().toBigInteger(), sk);
+//    }
 }

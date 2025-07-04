@@ -11,7 +11,7 @@ public class AuditService {
      */
     public void createAuditor() {
         // auditor 키 생성
-        AuditKey auditor = AuditKey.keyGen();
+//        AuditKey auditor = AuditKey.keyGen();
 
         // 키 등록
 

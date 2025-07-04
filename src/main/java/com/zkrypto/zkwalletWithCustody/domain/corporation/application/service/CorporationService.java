@@ -9,24 +9,20 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.respon
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
-import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
-import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7Utils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.SaltUtils;
-import com.zkrypto.zkwalletWithCustody.global.web3.Groth16AltBN128Mixer;
+import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.EcUtils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.Mimc7Utils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.SaltUtils;
 import com.zkrypto.zkwalletWithCustody.global.web3.Web3Service;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.math.ec.ECPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
-import org.web3j.utils.Numeric;
-
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
@@ -146,8 +142,8 @@ public class CorporationService {
 
     private UPK recoverFromUserSk(BigInteger sk) {
         BigInteger pkOwn = mimc7Utils.hash(sk);
-        ECPoint pkEnc = EcUtils.basePointMulCustom(sk);
-        BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
+        AffinePoint pkEnc = EcUtils.basePointMul(sk);
+        BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getX(), pkEnc.getY()));
         return new UPK(ena, pkOwn, pkEnc);
     }
 

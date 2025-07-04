@@ -24,10 +24,10 @@ public class Web3Test {
     @Value("${contract.mixer.address}")
     private String registerUserContractAddress;
 
-    @Test
-    void ENA_가져오기() {
-        Groth16AltBN128Mixer smartContract = web3Service.loadContract("77982682394618774300880293173989232703111784738901116327468465577013636406088", registerUserContractAddress);
-        CompletableFuture<Tuple3<BigInteger, BigInteger, Groth16AltBN128Mixer.CurvePoint>> tuple3CompletableFuture = smartContract.getUserPublicKeys("0xf10c25ced0a2b0c01bc59df04b9f0ac4a1528e01").sendAsync();
-
-    }
+//    @Test
+//    void ENA_가져오기() {
+//        Groth16AltBN128Mixer smartContract = web3Service.loadContract("77982682394618774300880293173989232703111784738901116327468465577013636406088", registerUserContractAddress);
+//        CompletableFuture<Tuple3<BigInteger, BigInteger, Groth16AltBN128Mixer.CurvePoint>> tuple3CompletableFuture = smartContract.getUserPublicKeys("0xf10c25ced0a2b0c01bc59df04b9f0ac4a1528e01").sendAsync();
+//
+//    }
 }

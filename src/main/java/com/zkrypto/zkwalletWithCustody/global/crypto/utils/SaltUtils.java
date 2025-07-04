@@ -1,4 +1,4 @@
-package com.zkrypto.zkwalletWithCustody.global.crypto;
+package com.zkrypto.zkwalletWithCustody.global.crypto.utils;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

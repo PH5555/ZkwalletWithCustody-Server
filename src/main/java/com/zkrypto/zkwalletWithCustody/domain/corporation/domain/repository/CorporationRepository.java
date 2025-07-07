@@ -21,5 +21,5 @@ public interface CorporationRepository extends JpaRepository<Corporation, UUID> 
 
     boolean existsCorporationByName(String name);
 
-    Optional<Corporation> findCorporationsByAddress(String address);
+    Optional<Corporation> findCorporationByAddress(String address);
 }

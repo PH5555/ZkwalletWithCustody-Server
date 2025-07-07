@@ -45,7 +45,7 @@ public class TransactionService {
         }
 
         // receiver 확인
-        Corporation receiver = corporationRepository.findCorporationsByAddress(transactionCreationCommand.getReceiverAddress())
+        Corporation receiver = corporationRepository.findCorporationByAddress(transactionCreationCommand.getReceiverAddress())
                 .orElseThrow(() -> new IllegalArgumentException("해당 주소를 가진 법인이 없습니다."));
 
         // 트랜잭션 생성

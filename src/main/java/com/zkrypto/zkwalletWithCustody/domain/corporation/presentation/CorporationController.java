@@ -76,8 +76,8 @@ public class CorporationController {
                     content = {@Content(schema = @Schema(implementation = WalletResponse.class))}),
     })
     @GetMapping("/wallet")
-    public ApiResponse<WalletResponse> getCorporationWallet(@RequestParam String corporationId) throws Exception {
-        return ApiResponse.success(corporationService.getWallet(corporationId));
+    public ApiResponse<WalletResponse> getCorporationWallet(@RequestParam(required = false) String corporationId, @RequestParam(required = false) String address) throws Exception {
+        return ApiResponse.success(corporationService.getWallet(corporationId, address));
     }
 
     @Operation(

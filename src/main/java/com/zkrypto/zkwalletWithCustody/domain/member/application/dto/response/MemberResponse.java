@@ -12,8 +12,10 @@ public class MemberResponse {
     private UUID id;
     private String name;
     private String position;
+    private String corporationName;
+    private String corporationId;
 
     public static MemberResponse from(Member member) {
-        return new MemberResponse(member.getMemberId(), member.getName(), member.getPosition());
+        return new MemberResponse(member.getMemberId(), member.getName(), member.getPosition(), member.getCorporation().getName(), member.getCorporation().getCorporationId());
     }
 }

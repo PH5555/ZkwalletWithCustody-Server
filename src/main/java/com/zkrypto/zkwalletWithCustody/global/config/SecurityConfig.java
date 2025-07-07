@@ -47,6 +47,7 @@ public class SecurityConfig {
 //                    authorizeRequest.requestMatchers("/corporation/wallet").hasAuthority(Role.ROLE_ADMIN.toString());
                     authorizeRequest.requestMatchers("/corporation").permitAll();
                     authorizeRequest.requestMatchers("/corporation/wallet").permitAll();
+                    authorizeRequest.requestMatchers("/corporation/member").permitAll();
 
                     // 트랜잭션 생성 API는 USER만 가능
                     authorizeRequest.requestMatchers(HttpMethod.POST, "/transaction").hasAuthority(Role.ROLE_USER.toString());

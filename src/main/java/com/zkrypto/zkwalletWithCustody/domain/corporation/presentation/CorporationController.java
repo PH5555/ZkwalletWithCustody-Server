@@ -2,6 +2,7 @@ package com.zkrypto.zkwalletWithCustody.domain.corporation.presentation;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationMembersResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletResponse;
@@ -75,7 +76,20 @@ public class CorporationController {
                     content = {@Content(schema = @Schema(implementation = WalletResponse.class))}),
     })
     @GetMapping("/wallet")
-    public ApiResponse<WalletResponse> getCorporationWallet(@RequestParam String corporationId) throws Exception {
-        return ApiResponse.success(corporationService.getWallet(corporationId));
+    public ApiResponse<WalletResponse> getCorporationWallet(@RequestParam(required = false) String corporationId, @RequestParam(required = false) String address) throws Exception {
+        return ApiResponse.success(corporationService.getWallet(corporationId, address));
+    }
+
+    @Operation(
+            summary = "법인 멤버 조회 API",
+            description = "법인의 모든 멤버를 조회하는 API입니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
+                    content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CorporationMembersResponse.class)))}),
+    })
+    @GetMapping("/member")
+    public ApiResponse<List<CorporationMembersResponse>> getCorporationMembers(@RequestParam String corporationId) {
+        return ApiResponse.success(corporationService.getAllMembers(corporationId));
     }
 }

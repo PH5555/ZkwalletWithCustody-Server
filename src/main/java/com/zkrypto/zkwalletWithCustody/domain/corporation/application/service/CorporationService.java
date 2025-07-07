@@ -2,29 +2,27 @@ package com.zkrypto.zkwalletWithCustody.domain.corporation.application.service;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationMembersResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.CorporationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
-import com.zkrypto.zkwalletWithCustody.global.crypto.AESUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.EcUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.Mimc7Utils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.SaltUtils;
-import com.zkrypto.zkwalletWithCustody.global.web3.Groth16AltBN128Mixer;
+import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
+import com.zkrypto.zkwalletWithCustody.global.crypto.constant.MiMC7;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.EcUtils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.SaltUtils;
 import com.zkrypto.zkwalletWithCustody.global.web3.Web3Service;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.math.ec.ECPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
-import org.web3j.utils.Numeric;
-
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
@@ -36,8 +34,11 @@ import java.util.List;
 @Slf4j
 public class CorporationService {
     private final CorporationRepository corporationRepository;
-    private final Mimc7Utils mimc7Utils;
     private final AESUtils aesUtils;
+    private final Web3Service web3Service;
+
+    @Value("${contract.mixer.address}")
+    private String registerUserContractAddress;
 
     /**
      * 법인 생성 메서드
@@ -83,25 +84,37 @@ public class CorporationService {
 
         // 지갑 생성
         BigInteger privateKey = generateWallet(corporation);
-        BigInteger usk = mimc7Utils.hash(privateKey);
+        BigInteger usk = deriveUskFromPrivateKey(privateKey);
 
         // usk 저장
         String cipherUsk = aesUtils.encrypt(usk.toString(), corporation.getSalt());
         corporation.setSecretKey(cipherUsk);
 
-        // 트랜잭션 조회 시작
-
-
-        return new WalletCreationResponse(privateKey.toString());
+        // ena 등록
+//        UPK upk = recoverFromUserSk(usk);
+//        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey.toString(16), registerUserContractAddress);
+//        smartContract.registerUser(Numeric.toBigInt(corporation.getAddress()), upk.getPkOwn(), List.of(upk.getPkEnc().getX(), upk.getPkEnc().getY())).send();
+        return new WalletCreationResponse(privateKey.toString(16));
     }
 
     /**
      * 지갑 반환 메서드
      */
-    public WalletResponse getWallet(String corporationId) throws Exception {
+    @Transactional
+    public WalletResponse getWallet(String corporationId, String address) throws Exception {
         // 법인 존재 확인
-        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+        Corporation corporation = null;
+        if(corporationId != null) {
+            corporation = corporationRepository.findCorporationByCorporationId(corporationId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+        }
+        else if(address != null) {
+            corporation = corporationRepository.findCorporationByAddress(address)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+        }
+        else {
+            throw new IllegalArgumentException("corporationId나 address 값이 없습니다.");
+        }
 
         // 지갑 있는지 확인
         if(StringUtils.isEmpty(corporation.getAddress())) {
@@ -112,22 +125,41 @@ public class CorporationService {
         String usk = aesUtils.decrypt(corporation.getSecretKey(), corporation.getSalt());
         UPK upk = recoverFromUserSk(new BigInteger(usk));
 
-        return WalletResponse.from(corporation.getAddress(), upk);
+        return WalletResponse.from(corporation.getAddress(), upk, usk);
+    }
+
+    /**
+     * 모든 멤버 반환 메서드
+     */
+    @Transactional
+    public List<CorporationMembersResponse> getAllMembers(String corporationId) {
+        // 법인 존재 확인
+        Corporation corporation = corporationRepository.findWithMembersByCorporationId(corporationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+
+        return corporation.getMembers().stream().map(member -> new CorporationMembersResponse(member.getName(), member.getPosition(), member.getCreatedAt(), member.getMemberId().toString())).toList();
     }
 
     private BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         ECKeyPair keyPair = Keys.createEcKeyPair();
-        BigInteger privateKeyHex = keyPair.getPrivateKey();
+        BigInteger privateKey = keyPair.getPrivateKey();
         String address = "0x" + Keys.getAddress(keyPair);
 
         corporation.setAddress(address);
-        return privateKeyHex;
+        return privateKey;
     }
 
     private UPK recoverFromUserSk(BigInteger sk) {
-        BigInteger pkOwn = mimc7Utils.hash(sk);
-        ECPoint pkEnc = EcUtils.basePointMulCustom(sk);
-        BigInteger ena = mimc7Utils.hash(List.of(pkOwn, pkEnc.getAffineXCoord().toBigInteger(), pkEnc.getAffineYCoord().toBigInteger()));
+        MiMC7 mimc = new MiMC7();
+        BigInteger pkOwn = mimc.hash(sk);
+        AffinePoint pkEnc = EcUtils.basePointMul(sk);
+        BigInteger ena = mimc.hash(pkOwn, pkEnc.getX(), pkEnc.getY());
         return new UPK(ena, pkOwn, pkEnc);
     }
+
+    private BigInteger deriveUskFromPrivateKey(BigInteger privateKey) {
+        MiMC7 mimc = new MiMC7();
+        return mimc.hash(privateKey);
+    }
+
 }

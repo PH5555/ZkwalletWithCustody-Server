@@ -3,6 +3,7 @@ package com.zkrypto.zkwalletWithCustody.test;
 import com.zkrypto.zkwalletWithCustody.domain.audit.application.service.AuditService;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.WalletCreationCommand;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.response.WalletCreationResponse;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
@@ -13,6 +14,7 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.reques
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.service.TransactionService;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TestDataHelper implements ApplicationRunner {
@@ -44,8 +47,11 @@ public class TestDataHelper implements ApplicationRunner {
 
         memberRepository.save(member);
 
-        corporationService.createCorporationWallet(new WalletCreationCommand(corporation1.getCorporationId()));
-        corporationService.createCorporationWallet(new WalletCreationCommand(corporation2.getCorporationId()));
+        WalletCreationResponse corporationWallet = corporationService.createCorporationWallet(new WalletCreationCommand(corporation1.getCorporationId()));
+        WalletCreationResponse corporationWallet1 = corporationService.createCorporationWallet(new WalletCreationCommand(corporation2.getCorporationId()));
+
+        log.info("지크립토 : " + "0x" + corporationWallet.getPrivateKey());
+        log.info("한양대학교 : " + "0x" + corporationWallet1.getPrivateKey());
 
         Corporation corporation = corporationRepository.findCorporationByCorporationId(corporation2.getCorporationId()).get();
 

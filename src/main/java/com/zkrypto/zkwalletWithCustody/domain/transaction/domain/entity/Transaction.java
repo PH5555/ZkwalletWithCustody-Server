@@ -63,8 +63,16 @@ public class Transaction {
     }
 
     public static Transaction create(TransactionCreationCommand transactionCreationCommand, Corporation sender, Corporation receiver) {
-        return new Transaction(transactionCreationCommand.getRemainingAmount(), receiver, sender,
-                transactionCreationCommand.getTotalOutput(), transactionCreationCommand.getToPrivateAmount(), transactionCreationCommand.getToPublicAmount(),
-                transactionCreationCommand.getTotalInput(), transactionCreationCommand.getUnSpentNote(), transactionCreationCommand.getFromPublicAmount(), transactionCreationCommand.getToPrivateAmount());
+        return new Transaction(
+                transactionCreationCommand.getRemainingAmount(),
+                receiver,
+                sender,
+                transactionCreationCommand.getTotalOutput(),
+                transactionCreationCommand.getToPrivateAmount(),
+                transactionCreationCommand.getToPublicAmount(),
+                transactionCreationCommand.getTotalInput(),
+                transactionCreationCommand.getUnSpentNote(),
+                transactionCreationCommand.getFromPublicAmount(),
+                transactionCreationCommand.getFromPrivateAmount());
     }
 }

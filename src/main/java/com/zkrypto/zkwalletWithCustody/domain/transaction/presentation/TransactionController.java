@@ -79,8 +79,8 @@ public class TransactionController {
                     content = {@Content(schema = @Schema(implementation = Void.class))}),
     })
     @PutMapping("")
-    public void updateTransaction(@RequestBody TransactionUpdateCommand transactionUpdateCommand) {
-        transactionService.updateTransaction(transactionUpdateCommand);
+    public void updateTransaction(TransactionUpdateCommand transactionUpdateCommand) {
+        transactionService.monitorTransaction(transactionUpdateCommand);
     }
 
     // TODO: 트랜잭션 서명 api

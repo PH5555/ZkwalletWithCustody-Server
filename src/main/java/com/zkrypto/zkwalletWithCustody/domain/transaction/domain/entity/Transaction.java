@@ -77,4 +77,10 @@ public class Transaction {
                 transactionCreationCommand.getFromPublicAmount(),
                 transactionCreationCommand.getFromPrivateAmount());
     }
+
+    public void update(BigInteger blockNumber) {
+        this.status = Status.DONE;
+        this.blockNumber = blockNumber;
+        this.signedAt = LocalDateTime.now();
+    }
 }

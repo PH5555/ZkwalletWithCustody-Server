@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 @SpringBootTest
 public class TransactionRepositoryTest {
@@ -29,7 +30,7 @@ public class TransactionRepositoryTest {
 
     @Test
     void 블럭_조회() {
-        BigInteger maxBlockNumber = transactionRepository.findMaxBlockNumber();
-        Assertions.assertThat(maxBlockNumber.toString()).isEqualTo("1");
+        Optional<BigInteger> maxBlockNumber = transactionRepository.findMaxBlockNumber();
+        Assertions.assertThat(maxBlockNumber.get().toString()).isEqualTo("1");
     }
 }

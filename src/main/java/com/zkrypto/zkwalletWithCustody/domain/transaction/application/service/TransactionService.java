@@ -1,5 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.domain.transaction.application.service;
 
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
@@ -12,14 +13,28 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Type;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.WalletUtils;
+import com.zkrypto.zkwalletWithCustody.global.web3.Groth16AltBN128Mixer;
+import com.zkrypto.zkwalletWithCustody.global.web3.Web3Service;
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +44,13 @@ public class TransactionService {
     private final CorporationRepository corporationRepository;
     private final TransactionRepository transactionRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Web3Service web3Service;
 
+    @Value("${contract.mixer.address}")
+    private String contractAddress;
+
+    @Value("${ethereum.privateKey}")
+    private String privateKey;
     /***
      *  트랜잭션 생성 메서드
      */
@@ -84,9 +105,48 @@ public class TransactionService {
     }
 
     @Transactional
-    public void updateTransaction(TransactionUpdateCommand transactionUpdateCommand) {
+    public void updateTransaction(Transaction transaction, BigInteger blockNumber) {
+        transaction.update(blockNumber);
+    }
+
+    /***
+     *  트랜잭션 조회 이벤트 리스너
+     */
+    @Transactional
+    public void monitorTransaction(TransactionUpdateCommand transactionUpdateCommand) {
+        // 트랜잭션 조회
         Transaction transaction = transactionRepository.findById(transactionUpdateCommand.getTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
-        transaction.setStatus(Status.DONE);
+
+        // 블럭넘버 조회
+        Optional<BigInteger> blockNumber = transactionRepository.findMaxBlockNumber();
+        DefaultBlockParameter startBlock = blockNumber.map(DefaultBlockParameter::valueOf).orElse(DefaultBlockParameterName.EARLIEST);
+
+        // 블록 조회 이벤트 생성
+        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey, contractAddress);
+        Flowable<Long> timeoutFlowable = Flowable.timer(2, TimeUnit.MINUTES);
+        Flowable<Groth16AltBN128Mixer.LogZkTransferEventResponse> eventFlowable = smartContract.logZkTransferEventFlowable(startBlock, DefaultBlockParameterName.LATEST);
+        AtomicReference<Disposable> subscriptionRef = new AtomicReference<>();
+        Disposable subscription = eventFlowable
+                .takeUntil(timeoutFlowable)
+                .subscribe(event -> {
+                    if (valid(event, transaction.getSender())) {
+                        // 트랜잭션 업데이트
+                        updateTransaction(transaction, event.log.getBlockNumber());
+                        subscriptionRef.get().dispose();
+                    }
+                });
+        subscriptionRef.set(subscription);
+    }
+
+    /***
+     *  블럭 유효성 검사
+     */
+    private Boolean valid(Groth16AltBN128Mixer.LogZkTransferEventResponse event, Corporation sender) throws Exception {
+        // ena 복원
+        String usk = AESUtils.decrypt(sender.getSecretKey(), sender.getSalt());
+        UPK upk = WalletUtils.recoverFromUserSk(new BigInteger(usk));
+        // event의 ena와 sender의 ena 일치하면 true
+        return event.ena.getFirst().toString().equals(upk.getEna().toString());
     }
 }

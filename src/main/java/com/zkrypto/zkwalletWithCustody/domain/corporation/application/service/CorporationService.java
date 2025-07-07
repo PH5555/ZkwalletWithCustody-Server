@@ -101,10 +101,20 @@ public class CorporationService {
      * 지갑 반환 메서드
      */
     @Transactional
-    public WalletResponse getWallet(String corporationId) throws Exception {
+    public WalletResponse getWallet(String corporationId, String address) throws Exception {
         // 법인 존재 확인
-        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+        Corporation corporation = null;
+        if(corporationId != null) {
+            corporation = corporationRepository.findCorporationByCorporationId(corporationId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+        }
+        else if(address != null) {
+            corporation = corporationRepository.findCorporationByAddress(address)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+        }
+        else {
+            throw new IllegalArgumentException("corporationId나 address 값이 없습니다.");
+        }
 
         // 지갑 있는지 확인
         if(StringUtils.isEmpty(corporation.getAddress())) {

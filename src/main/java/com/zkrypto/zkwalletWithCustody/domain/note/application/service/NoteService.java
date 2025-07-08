@@ -1,6 +1,8 @@
 package com.zkrypto.zkwalletWithCustody.domain.note.application.service;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.domain.note.application.dto.response.NoteResponse;
 import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
 import com.zkrypto.zkwalletWithCustody.domain.note.domain.repository.NoteRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
@@ -13,17 +15,34 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @AllArgsConstructor
 public class NoteService {
     private final NoteRepository noteRepository;
+    private final CorporationRepository corporationRepository;
 
     public void saveNote(Note note) {
         noteRepository.save(note);
     }
 
+    public List<NoteResponse> getCorporationNotes(String corporationId) {
+        // 법인 확인
+        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
+
+        // 법인의 모든 노트 가져오기
+        List<Note> notes = noteRepository.findNotesByCorporation(corporation);
+
+        return notes.stream().map(NoteResponse::from).toList();
+    }
+
+
+    /***
+     * 트랜잭션 ct, commitment, numleaves 정보로 노트 생성하는 메서드
+     */
     public Note getNote(List<BigInteger> ct, BigInteger commitment, BigInteger numLeaves, Corporation corporation) throws Exception {
         // usk 복호화
         String usk = AESUtils.decrypt(corporation.getSecretKey(), corporation.getSalt());
@@ -46,6 +65,10 @@ public class NoteService {
         return Note.from(ret, commitment, corporation, numLeaves);
     }
 
+
+    /***
+     * 노트 증명 메서드
+     */
     public Boolean isOwner(Note note) {
         MiMC7 mimc7 = new MiMC7();
         BigInteger hash = mimc7.hash(new BigInteger(note.getOpen()), new BigInteger(note.getTokenAddress()), new BigInteger(note.getTokenId()), new BigInteger(note.getAmount()), new BigInteger(note.getAddr()));

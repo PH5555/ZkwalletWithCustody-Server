@@ -23,7 +23,7 @@ public class Note {
     private String addr;
     private String commitment;
     private String index;
-    private boolean isSpent;
+    private Boolean isSpent;
 
     @ManyToOne
     @JoinColumn(name = "corporation_id")

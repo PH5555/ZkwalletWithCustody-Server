@@ -1,15 +1,12 @@
-package com.zkrypto.zkwalletWithCustody.domain.transaction.application.service;
+package com.zkrypto.zkwalletWithCustody.domain.note.application.service;
 
-import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
-import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Note;
-import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.NoteRepository;
-import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.repository.NoteRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.MiMC7;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.TwistedEdwardsCurve;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.utils.WalletUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +24,7 @@ public class NoteService {
         noteRepository.save(note);
     }
 
-    public Note getNote(List<BigInteger> ct, BigInteger commitment, Corporation corporation) throws Exception {
+    public Note getNote(List<BigInteger> ct, BigInteger commitment, BigInteger numLeaves, Corporation corporation) throws Exception {
         // usk 복호화
         String usk = AESUtils.decrypt(corporation.getSecretKey(), corporation.getSalt());
 
@@ -46,7 +43,7 @@ public class NoteService {
             ret.add(mod(e.subtract(hash), new BigInteger("21888242871839275222246405745257275088548364400416034343698204186575808495617")));
         });
 
-        return Note.from(ret, commitment, corporation);
+        return Note.from(ret, commitment, corporation, numLeaves);
     }
 
     public Boolean isOwner(Note note) {

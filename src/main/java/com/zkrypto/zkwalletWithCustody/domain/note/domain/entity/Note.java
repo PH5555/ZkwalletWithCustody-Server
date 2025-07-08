@@ -1,8 +1,7 @@
-package com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity;
+package com.zkrypto.zkwalletWithCustody.domain.note.domain.entity;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,13 +23,13 @@ public class Note {
     private String addr;
     private String commitment;
     private String index;
-    private String isSpent;
+    private boolean isSpent;
 
     @ManyToOne
     @JoinColumn(name = "corporation_id")
     private Corporation corporation;
 
-    private Note(String open, String tokenAddress, String tokenId, String amount, String addr, String commitment, Corporation corporation) {
+    private Note(String open, String tokenAddress, String tokenId, String amount, String addr, String commitment, Corporation corporation, String index) {
         this.open = open;
         this.tokenAddress = tokenAddress;
         this.tokenId = tokenId;
@@ -38,9 +37,11 @@ public class Note {
         this.addr = addr;
         this.commitment = commitment;
         this.corporation = corporation;
+        this.isSpent = false;
+        this.index = index;
     }
 
-    public static Note from(List<BigInteger> ret, BigInteger commitment, Corporation corporation) {
-        return new Note(ret.get(0).toString(), ret.get(1).toString(), ret.get(2).toString(), ret.get(3).toString(), ret.get(4).toString(), commitment.toString(), corporation);
+    public static Note from(List<BigInteger> ret, BigInteger commitment, Corporation corporation, BigInteger numLeaves) {
+        return new Note(ret.get(0).toString(), ret.get(1).toString(), ret.get(2).toString(), ret.get(3).toString(), ret.get(4).toString(), commitment.toString(), corporation, numLeaves.subtract(BigInteger.ONE).toString());
     }
 }

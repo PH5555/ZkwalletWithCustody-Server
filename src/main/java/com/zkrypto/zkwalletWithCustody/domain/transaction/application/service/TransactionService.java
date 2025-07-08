@@ -6,6 +6,7 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.Corp
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.repository.MemberRepository;
+import com.zkrypto.zkwalletWithCustody.domain.note.application.dto.event.NoteEventDto;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionUpdateCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.response.TransactionResponse;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final PasswordEncoder passwordEncoder;
     private final Web3Service web3Service;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -133,6 +136,9 @@ public class TransactionService {
                     if (valid(event, transaction.getSender())) {
                         // 트랜잭션 업데이트
                         updateTransaction(transaction, event.log.getBlockNumber());
+
+                        // 노트 생성 이벤트 생성
+                        eventPublisher.publishEvent(new NoteEventDto(event.ct, event.com, transaction.getReceiver(), event.numLeaves));
                         subscriptionRef.get().dispose();
                     }
                 });

@@ -1,4 +1,4 @@
-package com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.event;
+package com.zkrypto.zkwalletWithCustody.domain.note.application.dto.event;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import lombok.AllArgsConstructor;
@@ -13,4 +13,5 @@ public class NoteEventDto {
     private List<BigInteger> ct;
     private BigInteger commitment;
     private Corporation corporation;
+    private BigInteger numLeaves;
 }

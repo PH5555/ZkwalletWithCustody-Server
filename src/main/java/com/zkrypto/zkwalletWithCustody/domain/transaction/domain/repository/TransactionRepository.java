@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     @Query("select transaction from Transaction transaction left join fetch transaction.sender left join fetch transaction.receiver where transaction.sender = :sender and transaction.status = :status")
@@ -18,4 +20,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("select transaction from Transaction transaction left join fetch transaction.sender left join fetch transaction.receiver")
     List<Transaction> findAllWithCorporation();
+
+    @Query("select MAX(transaction.blockNumber) from Transaction transaction")
+    Optional<BigInteger> findMaxBlockNumber();
+
+    @Query("select transaction from Transaction transaction left join fetch transaction.sender left join fetch transaction.receiver where transaction.id = :transactionId")
+    Optional<Transaction> findTransactionByIdWithCorporation(@Param(value = "transactionId") Long transactionId);
+
+    Optional<Transaction> findTransactionById(Long id);
 }

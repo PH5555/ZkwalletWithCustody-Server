@@ -22,4 +22,7 @@ public interface CorporationRepository extends JpaRepository<Corporation, UUID> 
     boolean existsCorporationByName(String name);
 
     Optional<Corporation> findCorporationByAddress(String address);
+
+    @Query("select corporation from Member member left join member.corporation corporation where member.memberId = :memberId")
+    Optional<Corporation> findCorporationByMember(@Param(value = "memberId") UUID memberId);
 }

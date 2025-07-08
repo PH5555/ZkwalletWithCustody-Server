@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,6 +37,7 @@ public class Transaction {
     private LocalDateTime createdAt;
 
     private LocalDateTime signedAt;
+    private BigInteger blockNumber;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -74,5 +76,11 @@ public class Transaction {
                 transactionCreationCommand.getUnSpentNote(),
                 transactionCreationCommand.getFromPublicAmount(),
                 transactionCreationCommand.getFromPrivateAmount());
+    }
+
+    public void update(BigInteger blockNumber) {
+        this.status = Status.DONE;
+        this.blockNumber = blockNumber;
+        this.signedAt = LocalDateTime.now();
     }
 }

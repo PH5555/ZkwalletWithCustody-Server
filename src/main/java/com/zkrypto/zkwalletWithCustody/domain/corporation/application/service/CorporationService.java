@@ -9,24 +9,16 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.respon
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
-import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
-import com.zkrypto.zkwalletWithCustody.global.crypto.constant.MiMC7;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
-import com.zkrypto.zkwalletWithCustody.global.crypto.utils.EcUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.SaltUtils;
-import com.zkrypto.zkwalletWithCustody.global.web3.Web3Service;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.WalletUtils;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.web3j.crypto.ECKeyPair;
-import org.web3j.crypto.Keys;
+
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.List;
 
 @Service
@@ -34,11 +26,6 @@ import java.util.List;
 @Slf4j
 public class CorporationService {
     private final CorporationRepository corporationRepository;
-    private final AESUtils aesUtils;
-    private final Web3Service web3Service;
-
-    @Value("${contract.mixer.address}")
-    private String registerUserContractAddress;
 
     /**
      * 법인 생성 메서드
@@ -83,11 +70,11 @@ public class CorporationService {
         }
 
         // 지갑 생성
-        BigInteger privateKey = generateWallet(corporation);
-        BigInteger usk = deriveUskFromPrivateKey(privateKey);
+        BigInteger privateKey = WalletUtils.generateWallet(corporation);
+        BigInteger usk = WalletUtils.deriveUskFromPrivateKey(privateKey);
 
         // usk 저장
-        String cipherUsk = aesUtils.encrypt(usk.toString(), corporation.getSalt());
+        String cipherUsk = AESUtils.encrypt(usk.toString(), corporation.getSalt());
         corporation.setSecretKey(cipherUsk);
 
         // ena 등록
@@ -122,8 +109,8 @@ public class CorporationService {
         }
 
         // upk 생성
-        String usk = aesUtils.decrypt(corporation.getSecretKey(), corporation.getSalt());
-        UPK upk = recoverFromUserSk(new BigInteger(usk));
+        String usk = AESUtils.decrypt(corporation.getSecretKey(), corporation.getSalt());
+        UPK upk = WalletUtils.recoverFromUserSk(new BigInteger(usk));
 
         return WalletResponse.from(corporation.getAddress(), upk, usk);
     }
@@ -139,27 +126,4 @@ public class CorporationService {
 
         return corporation.getMembers().stream().map(member -> new CorporationMembersResponse(member.getName(), member.getPosition(), member.getCreatedAt(), member.getMemberId().toString())).toList();
     }
-
-    private BigInteger generateWallet(Corporation corporation) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        ECKeyPair keyPair = Keys.createEcKeyPair();
-        BigInteger privateKey = keyPair.getPrivateKey();
-        String address = "0x" + Keys.getAddress(keyPair);
-
-        corporation.setAddress(address);
-        return privateKey;
-    }
-
-    private UPK recoverFromUserSk(BigInteger sk) {
-        MiMC7 mimc = new MiMC7();
-        BigInteger pkOwn = mimc.hash(sk);
-        AffinePoint pkEnc = EcUtils.basePointMul(sk);
-        BigInteger ena = mimc.hash(pkOwn, pkEnc.getX(), pkEnc.getY());
-        return new UPK(ena, pkOwn, pkEnc);
-    }
-
-    private BigInteger deriveUskFromPrivateKey(BigInteger privateKey) {
-        MiMC7 mimc = new MiMC7();
-        return mimc.hash(privateKey);
-    }
-
 }

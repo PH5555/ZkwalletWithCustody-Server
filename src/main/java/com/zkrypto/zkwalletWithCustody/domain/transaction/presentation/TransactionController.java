@@ -71,15 +71,15 @@ public class TransactionController {
 
 
     @Operation(
-            summary = "트랜잭션 서명 완료 API",
-            description = "클라이언트에서 트랜잭션 전송을 완료하고 이 API를 호출하면 됩니다."
+            summary = "트랜잭션 전송 시작 API",
+            description = "클라이언트에서 트랜잭션 zktransfer를 실행하기 전에 이 API를 호출하면 됩니다. API 성공시 zktransfer 실행, API 실패시 zktransfer도 미실행"
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
                     content = {@Content(schema = @Schema(implementation = Void.class))}),
     })
     @PutMapping("")
-    public void updateTransaction(@RequestBody TransactionUpdateCommand transactionUpdateCommand) {
-        transactionService.updateTransaction(transactionUpdateCommand);
+    public void signTransaction(@RequestBody TransactionUpdateCommand transactionUpdateCommand) {
+        transactionService.monitorTransaction(transactionUpdateCommand);
     }
 }

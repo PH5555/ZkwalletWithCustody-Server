@@ -1,5 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.global.crypto.utils;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
@@ -16,11 +17,17 @@ import java.util.Base64;
 @Component
 public class AESUtils {
     @Value("${encryption.aes.key}")
+    private String aesKey;
     private static String masterPassword;
 
     private static final int KEY_LENGTH = 256;
     private static final int ITERATIONS = 65536;
     private static final int GCM_TAG_LENGTH = 128;
+
+    @PostConstruct
+    public void init() {
+        masterPassword = aesKey;
+    }
 
     public static String encrypt(String plaintext, String userSalt) throws Exception {
         SecretKey key = deriveKey(masterPassword, userSalt);

@@ -48,6 +48,7 @@ public class TransactionService {
     private final PasswordEncoder passwordEncoder;
     private final Web3Service web3Service;
     private final ApplicationEventPublisher eventPublisher;
+    private final TransactionUpdateService transactionUpdateService;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -107,11 +108,6 @@ public class TransactionService {
         return null;
     }
 
-    @Transactional
-    public void updateTransaction(Transaction transaction, BigInteger blockNumber) {
-        transaction.update(blockNumber);
-    }
-
     /***
      *  트랜잭션 조회 이벤트 리스너
      */
@@ -135,7 +131,7 @@ public class TransactionService {
                 .subscribe(event -> {
                     if (valid(event, transaction.getSender())) {
                         // 트랜잭션 업데이트
-                        updateTransaction(transaction, event.log.getBlockNumber());
+                        transactionUpdateService.updateTransaction(transaction.getId(), event.log.getBlockNumber());
 
                         // 노트 생성 이벤트 생성
                         eventPublisher.publishEvent(new NoteEventDto(event.ct, event.com, transaction.getReceiver(), event.numLeaves));

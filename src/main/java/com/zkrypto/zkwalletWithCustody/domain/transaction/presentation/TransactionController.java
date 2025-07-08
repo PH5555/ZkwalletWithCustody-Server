@@ -79,7 +79,7 @@ public class TransactionController {
                     content = {@Content(schema = @Schema(implementation = Void.class))}),
     })
     @PutMapping("")
-    public void updateTransaction(TransactionUpdateCommand transactionUpdateCommand) {
+    public void updateTransaction(@RequestBody TransactionUpdateCommand transactionUpdateCommand) {
         transactionService.monitorTransaction(transactionUpdateCommand);
     }
 

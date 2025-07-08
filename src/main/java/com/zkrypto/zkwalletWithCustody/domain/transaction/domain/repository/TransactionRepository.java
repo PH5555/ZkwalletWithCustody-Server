@@ -24,6 +24,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("select MAX(transaction.blockNumber) from Transaction transaction")
     Optional<BigInteger> findMaxBlockNumber();
 
-    @Query("select transaction from Transaction transaction left join fetch transaction.sender where transaction.id = :transactionId")
+    @Query("select transaction from Transaction transaction left join fetch transaction.sender left join fetch transaction.receiver where transaction.id = :transactionId")
     Optional<Transaction> findTransactionByIdWithCorporation(@Param(value = "transactionId") Long transactionId);
+
+    Optional<Transaction> findTransactionById(Long id);
 }

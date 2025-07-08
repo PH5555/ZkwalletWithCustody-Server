@@ -22,6 +22,8 @@ public class Note {
     private String amount;
     private String addr;
     private String commitment;
+
+    @Column(name = "note_index")
     private String index;
     private Boolean isSpent;
 

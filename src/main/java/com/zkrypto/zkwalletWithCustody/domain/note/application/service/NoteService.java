@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -28,9 +29,9 @@ public class NoteService {
         noteRepository.save(note);
     }
 
-    public List<NoteResponse> getCorporationNotes(String corporationId) {
+    public List<NoteResponse> getCorporationNotes(UUID memberId) {
         // 법인 확인
-        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporationId)
+        Corporation corporation = corporationRepository.findCorporationByMember(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
 
         // 법인의 모든 노트 가져오기

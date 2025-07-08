@@ -118,7 +118,7 @@ public class TransactionService {
     @Transactional
     public void monitorTransaction(TransactionUpdateCommand transactionUpdateCommand) {
         // 트랜잭션 조회
-        Transaction transaction = transactionRepository.findById(transactionUpdateCommand.getTransactionId())
+        Transaction transaction = transactionRepository.findTransactionByIdWithCorporation(transactionUpdateCommand.getTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
 
         // 블럭넘버 조회

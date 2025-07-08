@@ -29,13 +29,19 @@ public class TransactionRepositoryTest {
     @BeforeEach
     void 트랜잭션_생성() {
         Corporation corporation = corporationService.createCorporation(new CorporationCreationCommand("지크립토토"));
+        Corporation corporation2 = corporationService.createCorporation(new CorporationCreationCommand("지크립토토토"));
 
         Transaction transaction1 = new Transaction();
         transaction1.setBlockNumber(BigInteger.ZERO);
         transaction1.setSender(corporation);
+        transaction1.setReceiver(corporation2);
+        transactionRepository.save(transaction1);
 
         Transaction transaction2 = new Transaction();
         transaction2.setBlockNumber(BigInteger.ONE);
+        transactionRepository.save(transaction2);
+        transaction2.setSender(corporation);
+        transaction2.setReceiver(corporation2);
         transactionRepository.save(transaction2);
     }
 
@@ -45,11 +51,12 @@ public class TransactionRepositoryTest {
         Assertions.assertThat(maxBlockNumber.get().toString()).isEqualTo("1");
     }
 
-    @Transactional
     @Test
     void 트랜잭션_조회() {
         Optional<Transaction> transactionByIdWithCorporation = transactionRepository.findTransactionByIdWithCorporation(1L);
         BigInteger blockNumber = transactionByIdWithCorporation.get().getBlockNumber();
+        log.info(blockNumber.toString());
         Assertions.assertThat(transactionByIdWithCorporation.get().getSender().getName()).isEqualTo("지크립토토");
+        Assertions.assertThat(transactionByIdWithCorporation.get().getReceiver().getName()).isEqualTo("지크립토토토");
     }
 }

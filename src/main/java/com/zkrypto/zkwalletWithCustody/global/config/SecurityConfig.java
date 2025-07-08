@@ -57,6 +57,9 @@ public class SecurityConfig {
                     authorizeRequest.requestMatchers(HttpMethod.PUT, "/transaction").permitAll();
                     authorizeRequest.requestMatchers(HttpMethod.GET, "/transaction").permitAll();
 
+                    // 노트 조회 API는 USER만 가능
+                    authorizeRequest.requestMatchers("/note").hasAuthority(Role.ROLE_USER.toString());
+
                     // Swagger 관련 설정
                     authorizeRequest.requestMatchers("/v3/api-docs/**").permitAll();
                     authorizeRequest.requestMatchers("/swagger-resources/**").permitAll();

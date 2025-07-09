@@ -25,4 +25,6 @@ public interface CorporationRepository extends JpaRepository<Corporation, UUID> 
 
     @Query("select corporation from Member member left join member.corporation corporation where member.memberId = :memberId")
     Optional<Corporation> findCorporationByMember(@Param(value = "memberId") UUID memberId);
+
+    Optional<Corporation> findCorporationByName(String name);
 }

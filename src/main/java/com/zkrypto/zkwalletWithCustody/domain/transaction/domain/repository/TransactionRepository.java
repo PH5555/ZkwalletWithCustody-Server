@@ -28,9 +28,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("select transaction from Transaction transaction left join fetch transaction.sender left join fetch transaction.receiver where transaction.id = :transactionId")
     Optional<Transaction> findTransactionByIdWithCorporation(@Param(value = "transactionId") Long transactionId);
 
-    Optional<Transaction> findTransactionById(Long id);
-
-    List<Transaction> findTransactionByFromUnSpentNote(Note fromUnSpentNote);
+    @Query("select transaction from Transaction transaction left join fetch transaction.sender sender left join fetch transaction.receiver receiver where (sender = :corporation or receiver = :corporation) and transaction.status = :status")
+    List<Transaction> findTransactionsByCorporation(@Param(value = "corporation") Corporation corporation, @Param(value = "status") Status status);
 
     boolean existsTransactionByFromUnSpentNote(Note fromUnSpentNote);
 }

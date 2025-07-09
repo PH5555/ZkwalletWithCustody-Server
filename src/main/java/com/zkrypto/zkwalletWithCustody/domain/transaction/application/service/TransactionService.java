@@ -114,6 +114,9 @@ public class TransactionService {
             else if(type == Type.RECEIVE) {
                 return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
             }
+            else {
+                return transactionRepository.findTransactionsByCorporation(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
+            }
         }
 
         return null;

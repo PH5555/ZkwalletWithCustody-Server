@@ -128,9 +128,15 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findTransactionByIdWithCorporation(transactionUpdateCommand.getTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
 
+        // 이미 전송된 트랜잭션인지 확인
+        if(transaction.getStatus().equals(Status.DONE)) {
+            throw new IllegalArgumentException("이미 전송된 트랜잭션입니다.");
+        }
+
         // 블럭넘버 조회
         Optional<BigInteger> blockNumber = transactionRepository.findMaxBlockNumber();
-        DefaultBlockParameter startBlock = blockNumber.map(DefaultBlockParameter::valueOf).orElse(DefaultBlockParameterName.EARLIEST);
+        log.info("block number: " + blockNumber.toString());
+        DefaultBlockParameter startBlock = blockNumber.map(n -> DefaultBlockParameter.valueOf(n.add(BigInteger.ONE))).orElse(DefaultBlockParameterName.EARLIEST);
 
         // 블록 조회 이벤트 생성
         Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey, contractAddress);

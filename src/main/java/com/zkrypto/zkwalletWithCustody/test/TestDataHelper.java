@@ -61,6 +61,8 @@ public class TestDataHelper implements ApplicationRunner {
         Corporation corporation = corporationRepository.findCorporationByCorporationId(corporation2.getCorporationId()).get();
 
         TransactionCreationCommand command = new TransactionCreationCommand(0,1,null,1,0,1,1,0,corporation.getAddress(),"1234");
+        TransactionCreationCommand command1 = new TransactionCreationCommand(0,1,null,1,0,1,1,0,corporation.getAddress(),"1234");
         transactionService.createTransaction(member.getMemberId(), command);
+        transactionService.createTransaction(member.getMemberId(), command1);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "transactions")
@@ -26,7 +27,7 @@ public class Transaction {
 
     private int fromPrivateAmount;
     private int fromPublicAmount;
-    private int unSpentNote;
+    private UUID unSpentNote;
     private int totalInput;
     private int toPublicAmount;
     private int toPrivateAmount;

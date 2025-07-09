@@ -46,4 +46,8 @@ public class Note {
     public static Note from(List<BigInteger> ret, BigInteger commitment, Corporation corporation, BigInteger numLeaves) {
         return new Note(ret.get(0).toString(), ret.get(1).toString(), ret.get(2).toString(), ret.get(3).toString(), ret.get(4).toString(), commitment.toString(), corporation, numLeaves.subtract(BigInteger.ONE).toString());
     }
+
+    public void setNoteSpend() {
+        this.isSpent = true;
+    }
 }

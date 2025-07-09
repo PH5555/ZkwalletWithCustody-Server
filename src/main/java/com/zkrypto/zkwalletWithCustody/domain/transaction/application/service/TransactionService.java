@@ -55,6 +55,7 @@ public class TransactionService {
 
     @Value("${ethereum.privateKey}")
     private String privateKey;
+
     /***
      *  트랜잭션 생성 메서드
      */
@@ -133,8 +134,13 @@ public class TransactionService {
                         // 트랜잭션 업데이트
                         transactionUpdateService.updateTransaction(transaction.getId(), event.log.getBlockNumber());
 
-                        // 노트 생성 이벤트 생성
+                        // 노트 생성
                         eventPublisher.publishEvent(new NoteEventDto(event.ct, event.com, transaction.getReceiver(), event.numLeaves));
+
+                        // 노트 사용 여부 업데이트
+                        if(transaction.getUnSpentNote() != null) {
+
+                        }
                         subscriptionRef.get().dispose();
                     }
                 });

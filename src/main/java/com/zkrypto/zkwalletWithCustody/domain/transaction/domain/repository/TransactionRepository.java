@@ -1,6 +1,7 @@
 package com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findTransactionByIdWithCorporation(@Param(value = "transactionId") Long transactionId);
 
     Optional<Transaction> findTransactionById(Long id);
+
+    List<Transaction> findTransactionByFromUnSpentNote(Note fromUnSpentNote);
+
+    boolean existsTransactionByFromUnSpentNote(Note fromUnSpentNote);
 }

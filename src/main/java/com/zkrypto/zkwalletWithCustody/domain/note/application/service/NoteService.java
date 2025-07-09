@@ -5,6 +5,7 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.Corp
 import com.zkrypto.zkwalletWithCustody.domain.note.application.dto.response.NoteResponse;
 import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
 import com.zkrypto.zkwalletWithCustody.domain.note.domain.repository.NoteRepository;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.MiMC7;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.TwistedEdwardsCurve;
@@ -30,6 +31,7 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final CorporationRepository corporationRepository;
     private final Web3Service web3Service;
+    private final TransactionRepository transactionRepository;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -41,15 +43,19 @@ public class NoteService {
         noteRepository.save(note);
     }
 
+    /**
+     * 노트 조회 메서드
+     */
     public List<NoteResponse> getCorporationNotes(UUID memberId) {
         // 법인 확인
         Corporation corporation = corporationRepository.findCorporationByMember(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 법인입니다."));
 
-        // 법인의 모든 노트 가져오기
-        List<Note> notes = noteRepository.findNotesByCorporation(corporation);
+        // 법인의 소비하지 않은 모든 노트 가져오기
+        List<Note> notes = noteRepository.findNotSpendNotesByCorporation(corporation.getCorporationId());
 
-        return notes.stream().map(NoteResponse::from).toList();
+        // 사용한적 없는 노트만 반환
+        return notes.stream().filter(note -> !transactionRepository.existsTransactionByFromUnSpentNote(note)).map(NoteResponse::from).toList();
     }
 
     /**

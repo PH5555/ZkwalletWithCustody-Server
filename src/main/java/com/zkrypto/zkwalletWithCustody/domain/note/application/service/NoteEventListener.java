@@ -37,7 +37,9 @@ public class NoteEventListener {
     @EventListener
     public void process(NoteUpdateEventDto event) throws Exception {
         // 트랜잭션에서 노트가 쓰였으면 업데이트
+        log.info("노트 수정 이벤트");
         if(event.getTransaction().getFromUnSpentNote() != null) {
+            log.info("노트 수정 시작");
             noteService.updateNoteSpend(event.getTransaction().getFromUnSpentNote().getNoteId(), event.getTransaction().getSender());
         }
     }

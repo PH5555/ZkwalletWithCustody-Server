@@ -77,10 +77,6 @@ public class CorporationService {
         String cipherUsk = AESUtils.encrypt(usk.toString(), corporation.getSalt());
         corporation.setSecretKey(cipherUsk);
 
-        // ena 등록
-//        UPK upk = recoverFromUserSk(usk);
-//        Groth16AltBN128Mixer smartContract = web3Service.loadContract(privateKey.toString(16), registerUserContractAddress);
-//        smartContract.registerUser(Numeric.toBigInt(corporation.getAddress()), upk.getPkOwn(), List.of(upk.getPkEnc().getX(), upk.getPkEnc().getY())).send();
         return new WalletCreationResponse(privateKey.toString(16));
     }
 

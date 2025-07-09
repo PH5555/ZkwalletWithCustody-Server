@@ -1,9 +1,14 @@
 package com.zkrypto.zkwalletWithCustody.domain.audit.domain.constant;
 
+import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.EcUtils;
+import com.zkrypto.zkwalletWithCustody.global.crypto.utils.FieldUtils;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
 
+@Slf4j
 @Getter
 public class AuditKey {
     private Point pk;
@@ -25,9 +30,10 @@ public class AuditKey {
         this.sk = sk;
     }
 
-//    public static AuditKey keyGen() {
-//        BigInteger sk = FieldUtils.randomFieldElement();
-//        ECPoint ecPoint = EcUtils.basePointMulCustom(sk);
-//        return new AuditKey(ecPoint.getAffineXCoord().toBigInteger(), ecPoint.getAffineYCoord().toBigInteger(), sk);
-//    }
+    public static AuditKey keyGen() {
+        BigInteger sk = FieldUtils.randomFieldElement();
+        log.info("audit secret key: " + sk);
+        AffinePoint point = EcUtils.basePointMul(sk);
+        return new AuditKey(point.getX(), point.getY(), sk);
+    }
 }

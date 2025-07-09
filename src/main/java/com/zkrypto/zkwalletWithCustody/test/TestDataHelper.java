@@ -33,9 +33,12 @@ public class TestDataHelper implements ApplicationRunner {
     private final CorporationRepository corporationRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        auditService.generateAuditKey();
+
         Corporation corporation1 = corporationService.createCorporation(new CorporationCreationCommand("지크립토"));
         Corporation corporation2 = corporationService.createCorporation(new CorporationCreationCommand("한양대학교"));
 

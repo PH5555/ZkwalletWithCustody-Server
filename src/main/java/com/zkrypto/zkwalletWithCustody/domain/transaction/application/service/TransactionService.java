@@ -1,5 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.domain.transaction.application.service;
 
+import com.zkrypto.zkwalletWithCustody.domain.audit.application.service.AuditService;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.constant.UPK;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
@@ -51,6 +52,7 @@ public class TransactionService {
     private final ApplicationEventPublisher eventPublisher;
     private final TransactionUpdateService transactionUpdateService;
     private final NoteRepository noteRepository;
+    private final AuditService auditService;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -141,6 +143,8 @@ public class TransactionService {
                     if (valid(event, transaction.getSender())) {
                         // 트랜잭션 업데이트
                         transactionUpdateService.updateTransaction(transaction.getId(), event.log.getBlockNumber(), event.log.getTransactionHash());
+                        auditService.createAuditData(event);
+
                         // 노트 생성
                         eventPublisher.publishEvent(new NoteCreationEventDto(event.ct, event.com, transaction.getReceiver(), event.numLeaves));
 

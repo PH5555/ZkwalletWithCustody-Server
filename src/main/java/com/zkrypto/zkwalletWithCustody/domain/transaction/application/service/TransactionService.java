@@ -153,7 +153,10 @@ public class TransactionService {
 
                         subscriptionRef.get().dispose();
                     }
-                });
+                },throwable -> {                       // 🔴 onError
+                    log.error("Event stream error : ", throwable);
+                },
+                () -> log.info("Event stream completed") );
         subscriptionRef.set(subscription);
     }
 

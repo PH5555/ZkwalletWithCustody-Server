@@ -60,6 +60,7 @@ public class TransactionResponse {
     @Getter
     @AllArgsConstructor
     private static class UnSpentNote {
+        private String noteId;
         private String open;
         private String tokenAddress;
         private String tokenId;
@@ -71,7 +72,7 @@ public class TransactionResponse {
         public static UnSpentNote from(Note fromUnSpentNote) {
             if(fromUnSpentNote == null) return null;
             else {
-                return new UnSpentNote(fromUnSpentNote.getOpen(), fromUnSpentNote.getTokenAddress(), fromUnSpentNote.getTokenId(), fromUnSpentNote.getAmount(), fromUnSpentNote.getAddr(), fromUnSpentNote.getCommitment(), fromUnSpentNote.getIndex());
+                return new UnSpentNote(fromUnSpentNote.getNoteId().toString(), fromUnSpentNote.getOpen(), fromUnSpentNote.getTokenAddress(), fromUnSpentNote.getTokenId(), fromUnSpentNote.getAmount(), fromUnSpentNote.getAddr(), fromUnSpentNote.getCommitment(), fromUnSpentNote.getIndex());
             }
         }
     }

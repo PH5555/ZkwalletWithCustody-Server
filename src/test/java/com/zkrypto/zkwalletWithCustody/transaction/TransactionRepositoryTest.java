@@ -3,6 +3,7 @@ package com.zkrypto.zkwalletWithCustody.transaction;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.dto.request.CorporationCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
 import lombok.extern.slf4j.Slf4j;

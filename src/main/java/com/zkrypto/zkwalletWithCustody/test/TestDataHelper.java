@@ -10,6 +10,8 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.Corp
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.repository.MemberRepository;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.repository.NoteRepository;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.service.TransactionService;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
@@ -55,7 +57,7 @@ public class TestDataHelper implements ApplicationRunner {
 
         Corporation corporation = corporationRepository.findCorporationByCorporationId(corporation2.getCorporationId()).get();
 
-        TransactionCreationCommand command = new TransactionCreationCommand(0,1,0,1,0,1,1,0,corporation.getAddress(),"1234");
+        TransactionCreationCommand command = new TransactionCreationCommand(0,1,null,1,0,1,1,0,corporation.getAddress(),"1234");
         transactionService.createTransaction(member.getMemberId(), command);
     }
 }

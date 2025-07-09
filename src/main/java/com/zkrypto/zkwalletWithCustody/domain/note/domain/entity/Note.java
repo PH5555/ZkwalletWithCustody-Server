@@ -4,6 +4,7 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporat
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Entity
+@Setter
 public class Note {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID noteId;
@@ -45,5 +47,9 @@ public class Note {
 
     public static Note from(List<BigInteger> ret, BigInteger commitment, Corporation corporation, BigInteger numLeaves) {
         return new Note(ret.get(0).toString(), ret.get(1).toString(), ret.get(2).toString(), ret.get(3).toString(), ret.get(4).toString(), commitment.toString(), corporation, numLeaves.subtract(BigInteger.ONE).toString());
+    }
+
+    public void setNoteSpend() {
+        this.isSpent = true;
     }
 }

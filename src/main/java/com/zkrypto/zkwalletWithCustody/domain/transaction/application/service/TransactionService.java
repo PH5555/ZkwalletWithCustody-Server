@@ -140,8 +140,7 @@ public class TransactionService {
                 .subscribe(event -> {
                     if (valid(event, transaction.getSender())) {
                         // 트랜잭션 업데이트
-                        transactionUpdateService.updateTransaction(transaction.getId(), event.log.getBlockNumber());
-
+                        transactionUpdateService.updateTransaction(transaction.getId(), event.log.getBlockNumber(), event.log.getTransactionHash());
                         // 노트 생성
                         eventPublisher.publishEvent(new NoteCreationEventDto(event.ct, event.com, transaction.getReceiver(), event.numLeaves));
 

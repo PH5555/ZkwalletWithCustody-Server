@@ -44,6 +44,7 @@ public class Transaction {
 
     private LocalDateTime signedAt;
     private BigInteger blockNumber;
+    private String transactionHash;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -84,9 +85,10 @@ public class Transaction {
                 transactionCreationCommand.getFromPrivateAmount());
     }
 
-    public void update(BigInteger blockNumber) {
+    public void update(BigInteger blockNumber, String transactionHash) {
         this.status = Status.DONE;
         this.blockNumber = blockNumber;
+        this.transactionHash = transactionHash;
         this.signedAt = LocalDateTime.now();
     }
 }

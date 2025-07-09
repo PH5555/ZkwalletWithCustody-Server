@@ -27,8 +27,9 @@ public class TransactionResponse {
     private LocalDateTime createdAt;
     private LocalDateTime signedAt;
     private Status status;
+    private String transactionHash;
 
-    public TransactionResponse(Long transactionId, int fromPrivateAmount, int fromPublicAmount, Note fromUnSpentNote, int totalInput, int toPublicAmount, int toPrivateAmount, int totalOutput, int remainingAmount, String receiverAddress, String receiverName, String senderAddress, String senderName, LocalDateTime createdAt, LocalDateTime signedAt, Status status) {
+    public TransactionResponse(Long transactionId, int fromPrivateAmount, int fromPublicAmount, Note fromUnSpentNote, int totalInput, int toPublicAmount, int toPrivateAmount, int totalOutput, int remainingAmount, String receiverAddress, String receiverName, String senderAddress, String senderName, LocalDateTime createdAt, LocalDateTime signedAt, Status status, String transactionHash) {
         this.transactionId = transactionId;
         this.fromPrivateAmount = fromPrivateAmount;
         this.fromPublicAmount = fromPublicAmount;
@@ -45,6 +46,7 @@ public class TransactionResponse {
         this.createdAt = createdAt;
         this.signedAt = signedAt;
         this.status = status;
+        this.transactionHash = transactionHash;
     }
 
     public static TransactionResponse from(Transaction transaction) {
@@ -52,7 +54,7 @@ public class TransactionResponse {
                 transaction.getTotalInput(), transaction.getToPublicAmount(), transaction.getToPrivateAmount(),
                 transaction.getTotalOutput(), transaction.getRemainingAmount(), transaction.getReceiver().getAddress(),
                 transaction.getReceiver().getName(), transaction.getSender().getAddress(), transaction.getSender().getName(),
-                transaction.getCreatedAt(), transaction.getSignedAt(), transaction.getStatus());
+                transaction.getCreatedAt(), transaction.getSignedAt(), transaction.getStatus(), transaction.getTransactionHash());
     }
 
     @Getter

@@ -3,12 +3,14 @@ package com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.reque
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @AllArgsConstructor
 public class TransactionCreationCommand {
     private int fromPrivateAmount;
     private int fromPublicAmount;
-    private int unSpentNote;
+    private UUID fromUnSpentNoteId;
     private int totalInput;
     private int toPublicAmount;
     private int toPrivateAmount;

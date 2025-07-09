@@ -2,6 +2,7 @@ package com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity;
 
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status;
 import jakarta.persistence.*;
@@ -27,7 +28,11 @@ public class Transaction {
 
     private int fromPrivateAmount;
     private int fromPublicAmount;
-    private UUID unSpentNote;
+
+    @OneToOne
+    @JoinColumn(name = "note_id")
+    private Note fromUnSpentNote;
+
     private int totalInput;
     private int toPublicAmount;
     private int toPrivateAmount;
@@ -51,7 +56,7 @@ public class Transaction {
     @JoinColumn(name = "receiver_id")
     private Corporation receiver;
 
-    private Transaction(int remainingAmount, Corporation receiver, Corporation sender, int totalOutput, int toPrivateAmount, int toPublicAmount, int totalInput, int unSpentNote, int fromPublicAmount, int fromPrivateAmount) {
+    private Transaction(int remainingAmount, Corporation receiver, Corporation sender, int totalOutput, int toPrivateAmount, int toPublicAmount, int totalInput, Note note, int fromPublicAmount, int fromPrivateAmount) {
         this.remainingAmount = remainingAmount;
         this.receiver = receiver;
         this.sender = sender;
@@ -59,13 +64,13 @@ public class Transaction {
         this.toPrivateAmount = toPrivateAmount;
         this.toPublicAmount = toPublicAmount;
         this.totalInput = totalInput;
-        this.unSpentNote = unSpentNote;
+        this.fromUnSpentNote = note;
         this.fromPublicAmount = fromPublicAmount;
         this.fromPrivateAmount = fromPrivateAmount;
         this.status = Status.NONE;
     }
 
-    public static Transaction create(TransactionCreationCommand transactionCreationCommand, Corporation sender, Corporation receiver) {
+    public static Transaction create(TransactionCreationCommand transactionCreationCommand, Corporation sender, Corporation receiver, Note note) {
         return new Transaction(
                 transactionCreationCommand.getRemainingAmount(),
                 receiver,
@@ -74,7 +79,7 @@ public class Transaction {
                 transactionCreationCommand.getToPrivateAmount(),
                 transactionCreationCommand.getToPublicAmount(),
                 transactionCreationCommand.getTotalInput(),
-                transactionCreationCommand.getUnSpentNote(),
+                note,
                 transactionCreationCommand.getFromPublicAmount(),
                 transactionCreationCommand.getFromPrivateAmount());
     }

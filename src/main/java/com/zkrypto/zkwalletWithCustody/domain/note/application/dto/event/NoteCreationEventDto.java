@@ -9,7 +9,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Getter
-public class NoteEventDto {
+public class NoteCreationEventDto {
     private List<BigInteger> ct;
     private BigInteger commitment;
     private Corporation corporation;

@@ -6,7 +6,10 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.Corp
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.repository.MemberRepository;
-import com.zkrypto.zkwalletWithCustody.domain.note.application.dto.event.NoteEventDto;
+import com.zkrypto.zkwalletWithCustody.domain.note.application.dto.event.NoteCreationEventDto;
+import com.zkrypto.zkwalletWithCustody.domain.note.application.dto.event.NoteUpdateEventDto;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.repository.NoteRepository;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionUpdateCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.response.TransactionResponse;
@@ -22,7 +25,6 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ public class TransactionService {
     private final Web3Service web3Service;
     private final ApplicationEventPublisher eventPublisher;
     private final TransactionUpdateService transactionUpdateService;
+    private final NoteRepository noteRepository;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -74,8 +76,14 @@ public class TransactionService {
         Corporation receiver = corporationRepository.findCorporationByAddress(transactionCreationCommand.getReceiverAddress())
                 .orElseThrow(() -> new IllegalArgumentException("해당 주소를 가진 법인이 없습니다."));
 
+        // note 확인
+        Note note = Optional.ofNullable(transactionCreationCommand.getFromUnSpentNoteId())
+                .map(noteId -> noteRepository.findNoteByNoteId(transactionCreationCommand.getFromUnSpentNoteId())
+                        .orElseThrow(() -> new IllegalArgumentException("노트를 찾을 수 없습니다.")))
+                .orElse(null);
+
         // 트랜잭션 생성
-        Transaction transaction = Transaction.create(transactionCreationCommand, sender.getCorporation(), receiver);
+        Transaction transaction = Transaction.create(transactionCreationCommand, sender.getCorporation(), receiver, note);
         transactionRepository.save(transaction);
         return transaction;
     }
@@ -135,12 +143,11 @@ public class TransactionService {
                         transactionUpdateService.updateTransaction(transaction.getId(), event.log.getBlockNumber());
 
                         // 노트 생성
-                        eventPublisher.publishEvent(new NoteEventDto(event.ct, event.com, transaction.getReceiver(), event.numLeaves));
+                        eventPublisher.publishEvent(new NoteCreationEventDto(event.ct, event.com, transaction.getReceiver(), event.numLeaves));
 
                         // 노트 사용 여부 업데이트
-                        if(transaction.getUnSpentNote() != null) {
+                        eventPublisher.publishEvent(new NoteUpdateEventDto(transaction));
 
-                        }
                         subscriptionRef.get().dispose();
                     }
                 });

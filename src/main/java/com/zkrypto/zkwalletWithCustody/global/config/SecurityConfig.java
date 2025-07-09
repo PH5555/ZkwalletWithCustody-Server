@@ -60,6 +60,9 @@ public class SecurityConfig {
                     // 노트 조회 API는 USER만 가능
                     authorizeRequest.requestMatchers("/note").hasAuthority(Role.ROLE_USER.toString());
 
+                    // audit API 권한
+                    authorizeRequest.requestMatchers("/audit").permitAll();
+
                     // Swagger 관련 설정
                     authorizeRequest.requestMatchers("/v3/api-docs/**").permitAll();
                     authorizeRequest.requestMatchers("/swagger-resources/**").permitAll();

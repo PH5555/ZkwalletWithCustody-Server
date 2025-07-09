@@ -11,8 +11,10 @@ import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.MiMC7;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.TwistedEdwardsCurve;
+import com.zkrypto.zkwalletWithCustody.global.web3.Groth16AltBN128Mixer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,8 +36,17 @@ public class AuditService {
     }
 
     /**
+     * 감사 데이터 저장 메서드
+     */
+    public void createAuditData(Groth16AltBN128Mixer.LogZkTransferEventResponse event) {
+        AuditData auditData = AuditData.from(event);
+        auditDataRepository.save(auditData);
+    }
+
+    /**
      * 감사 진행 메서드
      */
+    @Transactional
     public AuditResultResponse processAudit(AuditCommand auditCommand) {
         // 감사 데이터 조회
         AuditData auditData = auditDataRepository.findByTransactionHash(auditCommand.getTransactionHash())

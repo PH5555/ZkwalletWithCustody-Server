@@ -8,6 +8,8 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.Corp
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.entity.Member;
 import com.zkrypto.zkwalletWithCustody.domain.member.domain.repository.MemberRepository;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
+import com.zkrypto.zkwalletWithCustody.domain.note.domain.repository.NoteRepository;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionCreationCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.request.TransactionUpdateCommand;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.response.TransactionResponse;
@@ -43,6 +45,9 @@ public class TransactionServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private NoteRepository noteRepository;
+
 //    @Test
 //    void 트랜잭션_생성() throws Exception {
 //        Corporation corporation1 = corporationService.createCorporation(new CorporationCreationCommand("지크립토"));
@@ -52,6 +57,9 @@ public class TransactionServiceTest {
 //        member.setCorporation(corporation1);
 //        member.setPassword(passwordEncoder.encode("1234"));
 //
+//        Note note = new Note();
+//        noteRepository.save(note);
+//
 //        memberRepository.save(member);
 //
 //        corporationService.createCorporationWallet(new WalletCreationCommand(corporation1.getCorporationId()));
@@ -59,9 +67,9 @@ public class TransactionServiceTest {
 //
 //        Corporation corporation = corporationRepository.findCorporationByCorporationId(corporation2.getCorporationId()).get();
 //
-//        TransactionCreationCommand command = new TransactionCreationCommand(0,0,0,0,0,0,0,0,corporation.getAddress(),"1234");
+//        TransactionCreationCommand command = new TransactionCreationCommand(0,0,note.getNoteId(),0,0,0,0,0,corporation.getAddress(),"1234");
 //        Transaction transaction = transactionService.createTransaction(member.getMemberId(), command);
-//        Assertions.assertThat(transaction.getReceiver().getCorporationId()).isEqualTo(corporation2.getCorporationId());
+//        Assertions.assertThat(transaction.getFromUnSpentNote().getNoteId()).isEqualTo(note.getNoteId());
 //    }
 //
 //    @Test

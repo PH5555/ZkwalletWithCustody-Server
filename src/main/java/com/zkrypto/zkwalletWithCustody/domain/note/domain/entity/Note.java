@@ -4,6 +4,7 @@ import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporat
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Entity
+@Setter
 public class Note {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID noteId;

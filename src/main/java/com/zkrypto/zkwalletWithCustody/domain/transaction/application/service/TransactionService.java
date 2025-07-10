@@ -134,6 +134,14 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findTransactionByIdWithCorporation(transactionUpdateCommand.getTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
 
+        // 모든 임원들이 트랜잭션 서명을 했는지 확인
+        int signedCount = signedTransactionRepository.findSignedTransactionCountByTransaction(transaction);
+        int memberCount = memberRepository.findMemberCountByCorporation(transaction.getSender());
+
+        if(signedCount < memberCount) {
+            throw new IllegalArgumentException("모든 임원들이 서명을 해야합니다.");
+        }
+
         // 이미 전송된 트랜잭션인지 확인
         if(transaction.getStatus().equals(Status.DONE)) {
             throw new IllegalArgumentException("이미 전송된 트랜잭션입니다.");

@@ -100,7 +100,7 @@ public class TransactionService {
     public List<TransactionResponse> getTransactions(UUID memberId, Status status, Type type) {
         // 어드민일 경우 status 상관 없이 다 가져오기
         if(memberId == null) {
-            return transactionRepository.findAllWithCorporation().stream().map(TransactionResponse::from).toList();
+            return transactionRepository.findAllWithCorporation().stream().map(this::toTransactionResponse).toList();
         }
 
         // 멤버 확인
@@ -108,21 +108,31 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
         if(member.getRole() == Role.ROLE_USER && status == Status.NONE) {
-            return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(TransactionResponse::from).toList();
+            return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(this::toTransactionResponse).toList();
         }
         else if (member.getRole() == Role.ROLE_USER && status == Status.DONE) {
             if(type == Type.SEND) {
-                return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
+                return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
             }
             else if(type == Type.RECEIVE) {
-                return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
+                return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
             }
             else {
-                return transactionRepository.findTransactionsByCorporation(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
+                return transactionRepository.findTransactionsByCorporation(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
             }
         }
 
         return null;
+    }
+
+    private TransactionResponse toTransactionResponse(Transaction transaction) {
+        // 트랜잭션 sender 법인의 임원 수 가져오기
+        int memberCount = memberRepository.findMemberCountByCorporation(transaction.getSender());
+
+        // 트랜잭션 sender 법인의 서명 수 가져오기
+        int signedCount = signedTransactionRepository.findSignedTransactionCountByTransaction(transaction);
+
+        return TransactionResponse.from(transaction, memberCount, signedCount);
     }
 
     /***

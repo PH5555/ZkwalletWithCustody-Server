@@ -16,7 +16,9 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.reques
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.response.TransactionResponse;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Type;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.SignedTransaction;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.SignedTransactionRepository;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.WalletUtils;
@@ -53,6 +55,7 @@ public class TransactionService {
     private final TransactionUpdateService transactionUpdateService;
     private final NoteRepository noteRepository;
     private final AuditService auditService;
+    private final SignedTransactionRepository signedTransactionRepository;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -163,12 +166,13 @@ public class TransactionService {
                         subscriptionRef.get().dispose();
                     }
                 },root -> {
-                            while (root.getCause() != null) {
-                                root = root.getCause();
-                            }
-                            log.error("Root cause = " + root.getClass() + " : " + root.getMessage());// 🔴 onError
-                        },
-                        () -> log.info("Event stream completed") );
+                    while (root.getCause() != null) {
+                        root = root.getCause();
+                    }
+                    log.error("Root cause = " + root.getClass() + " : " + root.getMessage());
+                },
+                () -> log.info("Event stream completed")
+                );
         subscriptionRef.set(subscription);
     }
 
@@ -181,5 +185,22 @@ public class TransactionService {
         UPK upk = WalletUtils.recoverFromUserSk(new BigInteger(usk));
         // event의 ena와 sender의 ena 일치하면 true
         return event.ena.getFirst().toString().equals(upk.getEna().toString());
+    }
+
+    /**
+     * 트랜잭션 서명 메서드
+     */
+    @Transactional
+    public void checkTransaction(UUID memberId, TransactionUpdateCommand transactionUpdateCommand) {
+        // 트랜잭션 조회
+        Transaction transaction = transactionRepository.findTransactionByIdWithCorporation(transactionUpdateCommand.getTransactionId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
+
+        // 멤버 확인
+        Member signer = memberRepository.findMemberByMemberIdWithCorporation(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+
+        SignedTransaction signedTransaction = new SignedTransaction(transaction, signer);
+        signedTransactionRepository.save(signedTransaction);
     }
 }

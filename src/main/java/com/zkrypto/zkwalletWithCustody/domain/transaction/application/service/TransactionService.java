@@ -183,14 +183,7 @@ public class TransactionService {
 
                         subscriptionRef.get().dispose();
                     }
-                },root -> {
-                    while (root.getCause() != null) {
-                        root = root.getCause();
-                    }
-                    log.error("Root cause = " + root.getClass() + " : " + root.getMessage());
-                },
-                () -> log.info("Event stream completed")
-                );
+                });
         subscriptionRef.set(subscription);
     }
 

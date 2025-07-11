@@ -216,6 +216,11 @@ public class TransactionService {
         Member signer = memberRepository.findMemberByMemberIdWithCorporation(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
+        // 이미 서명한 멤버인지 확인
+        if(signedTransactionRepository.existsByTransactionAndMember(transaction, signer)) {
+            throw new IllegalArgumentException("이미 서명을 했습니다.");
+        }
+
         SignedTransaction signedTransaction = new SignedTransaction(transaction, signer);
         signedTransactionRepository.save(signedTransaction);
     }

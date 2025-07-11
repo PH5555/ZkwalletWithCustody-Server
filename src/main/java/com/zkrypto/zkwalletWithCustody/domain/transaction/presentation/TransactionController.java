@@ -82,4 +82,28 @@ public class TransactionController {
     public void signTransaction(@RequestBody TransactionUpdateCommand transactionUpdateCommand) {
         transactionService.monitorTransaction(transactionUpdateCommand);
     }
+
+    @Operation(
+            summary = "C레벨 임원측 트랜잭션 서명 API",
+            description = "C레벨 임원측에서 트랜잭션에 대한 서명을 하는 API입니다. 모든 C레벨 임원이 서명을 해야 커스터디가 최종으로 서명할 수 있습니다.",
+            security = {
+                    @SecurityRequirement(name = "bearerAuth")
+            },
+            parameters = {
+                    @Parameter(
+                            in = ParameterIn.HEADER,
+                            name = "Authorization",
+                            description = "Bearer 토큰 (ROLE_USER 사용자만 접근 가능)",
+                            required = true
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "요청 성공",
+                    content = {@Content(schema = @Schema(implementation = Void.class))}),
+    })
+    @PatchMapping("")
+    public void checkTransaction(@AuthenticationPrincipal UUID memberId, @RequestBody TransactionUpdateCommand transactionUpdateCommand) {
+        transactionService.checkTransaction(memberId, transactionUpdateCommand);
+    }
 }

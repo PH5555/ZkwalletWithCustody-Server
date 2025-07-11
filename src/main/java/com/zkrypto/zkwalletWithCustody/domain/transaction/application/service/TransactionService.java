@@ -16,7 +16,9 @@ import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.reques
 import com.zkrypto.zkwalletWithCustody.domain.transaction.application.dto.response.TransactionResponse;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Status;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.constant.Type;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.SignedTransaction;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.entity.Transaction;
+import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.SignedTransactionRepository;
 import com.zkrypto.zkwalletWithCustody.domain.transaction.domain.repository.TransactionRepository;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.AESUtils;
 import com.zkrypto.zkwalletWithCustody.global.crypto.utils.WalletUtils;
@@ -53,6 +55,7 @@ public class TransactionService {
     private final TransactionUpdateService transactionUpdateService;
     private final NoteRepository noteRepository;
     private final AuditService auditService;
+    private final SignedTransactionRepository signedTransactionRepository;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -97,7 +100,7 @@ public class TransactionService {
     public List<TransactionResponse> getTransactions(UUID memberId, Status status, Type type) {
         // 어드민일 경우 status 상관 없이 다 가져오기
         if(memberId == null) {
-            return transactionRepository.findAllWithCorporation().stream().map(TransactionResponse::from).toList();
+            return transactionRepository.findAllWithCorporation().stream().map(this::toTransactionResponse).toList();
         }
 
         // 멤버 확인
@@ -105,21 +108,31 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
         if(member.getRole() == Role.ROLE_USER && status == Status.NONE) {
-            return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(TransactionResponse::from).toList();
+            return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(this::toTransactionResponse).toList();
         }
         else if (member.getRole() == Role.ROLE_USER && status == Status.DONE) {
             if(type == Type.SEND) {
-                return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
+                return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
             }
             else if(type == Type.RECEIVE) {
-                return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
+                return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
             }
             else {
-                return transactionRepository.findTransactionsByCorporation(member.getCorporation(), Status.DONE).stream().map(TransactionResponse::from).toList();
+                return transactionRepository.findTransactionsByCorporation(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
             }
         }
 
         return null;
+    }
+
+    private TransactionResponse toTransactionResponse(Transaction transaction) {
+        // 트랜잭션 sender 법인의 임원 수 가져오기
+        int memberCount = memberRepository.findMemberCountByCorporation(transaction.getSender());
+
+        // 트랜잭션 sender 법인의 서명 수 가져오기
+        int signedCount = signedTransactionRepository.findSignedTransactionCountByTransaction(transaction);
+
+        return TransactionResponse.from(transaction, memberCount, signedCount);
     }
 
     /***
@@ -130,6 +143,14 @@ public class TransactionService {
         // 트랜잭션 조회
         Transaction transaction = transactionRepository.findTransactionByIdWithCorporation(transactionUpdateCommand.getTransactionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
+
+        // 모든 임원들이 트랜잭션 서명을 했는지 확인
+        int signedCount = signedTransactionRepository.findSignedTransactionCountByTransaction(transaction);
+        int memberCount = memberRepository.findMemberCountByCorporation(transaction.getSender());
+
+        if(signedCount < memberCount) {
+            throw new IllegalArgumentException("모든 임원들이 서명을 해야합니다.");
+        }
 
         // 이미 전송된 트랜잭션인지 확인
         if(transaction.getStatus().equals(Status.DONE)) {
@@ -162,13 +183,7 @@ public class TransactionService {
 
                         subscriptionRef.get().dispose();
                     }
-                },root -> {
-                            while (root.getCause() != null) {
-                                root = root.getCause();
-                            }
-                            log.error("Root cause = " + root.getClass() + " : " + root.getMessage());// 🔴 onError
-                        },
-                        () -> log.info("Event stream completed") );
+                });
         subscriptionRef.set(subscription);
     }
 
@@ -181,5 +196,22 @@ public class TransactionService {
         UPK upk = WalletUtils.recoverFromUserSk(new BigInteger(usk));
         // event의 ena와 sender의 ena 일치하면 true
         return event.ena.getFirst().toString().equals(upk.getEna().toString());
+    }
+
+    /**
+     * 트랜잭션 서명 메서드
+     */
+    @Transactional
+    public void checkTransaction(UUID memberId, TransactionUpdateCommand transactionUpdateCommand) {
+        // 트랜잭션 조회
+        Transaction transaction = transactionRepository.findTransactionByIdWithCorporation(transactionUpdateCommand.getTransactionId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 트랜잭션을 찾을 수 없습니다."));
+
+        // 멤버 확인
+        Member signer = memberRepository.findMemberByMemberIdWithCorporation(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+
+        SignedTransaction signedTransaction = new SignedTransaction(transaction, signer);
+        signedTransactionRepository.save(signedTransaction);
     }
 }

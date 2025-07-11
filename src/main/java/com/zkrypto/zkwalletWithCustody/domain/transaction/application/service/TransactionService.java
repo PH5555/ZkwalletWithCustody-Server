@@ -90,6 +90,11 @@ public class TransactionService {
         // 트랜잭션 생성
         Transaction transaction = Transaction.create(transactionCreationCommand, sender.getCorporation(), receiver, note);
         transactionRepository.save(transaction);
+
+        // 해당 트랜잭션 서명 처리
+        SignedTransaction signedTransaction = new SignedTransaction(transaction, sender);
+        signedTransactionRepository.save(signedTransaction);
+        
         return transaction;
     }
 

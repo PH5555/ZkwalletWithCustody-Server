@@ -113,21 +113,34 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
 
         if(member.getRole() == Role.ROLE_USER && status == Status.NONE) {
-            return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(this::toTransactionResponse).toList();
+            return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.NONE).stream().map(transaction -> toTransactionResponse(transaction, member)).toList();
         }
         else if (member.getRole() == Role.ROLE_USER && status == Status.DONE) {
             if(type == Type.SEND) {
-                return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
+                return transactionRepository.findTransactionsBySender(member.getCorporation(), Status.DONE).stream().map(transaction -> toTransactionResponse(transaction, member)).toList();
             }
             else if(type == Type.RECEIVE) {
-                return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
+                return transactionRepository.findTransactionsByReceiver(member.getCorporation(), Status.DONE).stream().map(transaction -> toTransactionResponse(transaction, member)).toList();
             }
             else {
-                return transactionRepository.findTransactionsByCorporation(member.getCorporation(), Status.DONE).stream().map(this::toTransactionResponse).toList();
+                return transactionRepository.findTransactionsByCorporation(member.getCorporation(), Status.DONE).stream().map(transaction -> toTransactionResponse(transaction, member)).toList();
             }
         }
 
         return null;
+    }
+
+    private TransactionResponse toTransactionResponse(Transaction transaction, Member member) {
+        // 트랜잭션 sender 법인의 임원 수 가져오기
+        int memberCount = memberRepository.findMemberCountByCorporation(transaction.getSender());
+
+        // 트랜잭션 sender 법인의 서명 수 가져오기
+        int signedCount = signedTransactionRepository.findSignedTransactionCountByTransaction(transaction);
+
+        // 서명 여부 가져오기
+        Boolean isCompleted = signedTransactionRepository.existsByTransactionAndMember(transaction, member);
+
+        return TransactionResponse.from(transaction, memberCount, signedCount, isCompleted);
     }
 
     private TransactionResponse toTransactionResponse(Transaction transaction) {
@@ -215,6 +228,11 @@ public class TransactionService {
         // 멤버 확인
         Member signer = memberRepository.findMemberByMemberIdWithCorporation(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+
+        // 이미 서명한 멤버인지 확인
+        if(signedTransactionRepository.existsByTransactionAndMember(transaction, signer)) {
+            throw new IllegalArgumentException("이미 서명을 했습니다.");
+        }
 
         SignedTransaction signedTransaction = new SignedTransaction(transaction, signer);
         signedTransactionRepository.save(signedTransaction);

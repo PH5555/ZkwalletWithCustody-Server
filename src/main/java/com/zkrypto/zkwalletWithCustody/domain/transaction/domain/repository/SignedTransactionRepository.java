@@ -14,5 +14,5 @@ public interface SignedTransactionRepository extends JpaRepository<SignedTransac
     @Query("select count(t) from SignedTransaction t where t.transaction = :transaction")
     int findSignedTransactionCountByTransaction(@Param("transaction") Transaction transaction);
 
-    boolean existsByTransactionAndMember(Transaction transaction, Member member);
+    Boolean existsByTransactionAndMember(Transaction transaction, Member member);
 }

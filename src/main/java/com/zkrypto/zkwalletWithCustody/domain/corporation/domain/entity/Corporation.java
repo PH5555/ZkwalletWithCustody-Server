@@ -25,6 +25,7 @@ public class Corporation {
 
     private String name;
     private String address;
+    private String ena;
     private String salt;
 
     @CreatedDate
@@ -49,5 +50,10 @@ public class Corporation {
 
     public static Corporation create(CorporationCreationCommand corporationCreationCommand, String salt) {
         return new Corporation(UUID.randomUUID().toString().substring(0,6), corporationCreationCommand.getName(), salt);
+    }
+
+    public void setSecretAddress(String cipherUsk, String ena) {
+        this.secretKey = cipherUsk;
+        this.ena = ena;
     }
 }

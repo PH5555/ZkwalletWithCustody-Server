@@ -94,6 +94,8 @@ public class CorporationServiceTest {
 //        corporationService.createCorporationWallet(new WalletCreationCommand(corporation.getCorporationId()));
 //
 //        Corporation findCorporation = corporationRepository.findCorporationByCorporationId(corporation.getCorporationId()).get();
+//        log.info(findCorporation.getEna());
+//        log.info(findCorporation.getSecretKey());
 //        Assertions.assertThat(findCorporation.getAddress()).isNotNull();
 //    }
 //

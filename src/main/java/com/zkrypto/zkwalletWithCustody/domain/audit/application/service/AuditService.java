@@ -6,6 +6,7 @@ import com.zkrypto.zkwalletWithCustody.domain.audit.application.dto.response.Aud
 import com.zkrypto.zkwalletWithCustody.domain.audit.domain.constant.AuditKey;
 import com.zkrypto.zkwalletWithCustody.domain.audit.domain.entity.AuditData;
 import com.zkrypto.zkwalletWithCustody.domain.audit.domain.repository.AuditDataRepository;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.domain.note.application.service.NoteService;
 import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
@@ -32,6 +33,7 @@ public class AuditService {
     private final AuditDataRepository auditDataRepository;
     private final NoteService noteService;
     private final Web3Service web3Service;
+    private final CorporationRepository corporationRepository;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -84,6 +86,7 @@ public class AuditService {
         if(!noteService.isOwner(note)) {
             throw new IllegalArgumentException("감사를 실패했습니다.");
         }
+
         return AuditResultResponse.from(note);
     }
 
@@ -103,5 +106,9 @@ public class AuditService {
         } else {
             return ((value.mod(mod)).add(mod)).mod(mod);
         }
+    }
+
+    private String enaToAddress(String ena) {
+        return corporationRepository.findAddressByEna(ena);
     }
 }

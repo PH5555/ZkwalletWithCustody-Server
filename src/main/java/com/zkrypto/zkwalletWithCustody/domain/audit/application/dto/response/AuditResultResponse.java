@@ -12,7 +12,7 @@ public class AuditResultResponse {
     private String tokenAddress;
     private String tokenId;
 
-    public static AuditResultResponse from(Note note) {
-        return new AuditResultResponse(note.getAddr(), note.getAmount(), note.getTokenAddress(), note.getTokenId());
+    public static AuditResultResponse from(Note note, String address) {
+        return new AuditResultResponse(address, note.getAmount(), note.getTokenAddress(), note.getTokenId());
     }
 }

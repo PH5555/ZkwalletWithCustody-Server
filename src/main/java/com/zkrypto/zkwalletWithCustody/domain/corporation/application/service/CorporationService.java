@@ -73,9 +73,10 @@ public class CorporationService {
         BigInteger privateKey = WalletUtils.generateWallet(corporation);
         BigInteger usk = WalletUtils.deriveUskFromPrivateKey(privateKey);
 
-        // usk 저장
+        // usk, ena 저장
         String cipherUsk = AESUtils.encrypt(usk.toString(), corporation.getSalt());
-        corporation.setSecretKey(cipherUsk);
+        UPK upk = WalletUtils.recoverFromUserSk(usk);
+        corporation.setSecretAddress(cipherUsk, upk.getEna().toString());
 
         return new WalletCreationResponse(privateKey.toString(16));
     }

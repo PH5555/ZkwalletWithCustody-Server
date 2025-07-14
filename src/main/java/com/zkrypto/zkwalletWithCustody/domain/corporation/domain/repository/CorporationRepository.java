@@ -27,4 +27,7 @@ public interface CorporationRepository extends JpaRepository<Corporation, UUID> 
     Optional<Corporation> findCorporationByMember(@Param(value = "memberId") UUID memberId);
 
     Optional<Corporation> findCorporationByName(String name);
+
+    @Query("select corporation.address from Corporation corporation where corporation.ena = : ena")
+    String findAddressByEna(@Param(value = "ena") String ena);
 }

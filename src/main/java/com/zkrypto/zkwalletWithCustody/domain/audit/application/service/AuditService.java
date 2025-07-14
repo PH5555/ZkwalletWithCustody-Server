@@ -35,17 +35,17 @@ public class AuditService {
     private final Web3Service web3Service;
     private final CorporationRepository corporationRepository;
 
-    @Value("${contract.mixer.address}")
-    private String contractAddress;
-
-    @Value("${ethereum.privateKey}")
-    private String privateKey;
     /**
      * 모든 감사 데이터 조회 메서드
      */
     public List<AuditDataResponse> getAuditData() {
         List<AuditData> auditData = auditDataRepository.findAll();
-        return auditData.stream().map(AuditDataResponse::from).toList();
+        return auditData.stream().map(this::toAuditDateResponse).toList();
+    }
+
+    private AuditDataResponse toAuditDateResponse(AuditData auditData) {
+        String address = enaToAddress(auditData.getEna());
+        return AuditDataResponse.from(auditData, address);
     }
 
     /**
@@ -87,7 +87,12 @@ public class AuditService {
             throw new IllegalArgumentException("감사를 실패했습니다.");
         }
 
-        return AuditResultResponse.from(note);
+        return toAuditResultResponse(note);
+    }
+
+    private AuditResultResponse toAuditResultResponse(Note note) {
+        String address = enaToAddress(note.getAddr());
+        return AuditResultResponse.from(note, address);
     }
 
     /**

@@ -13,7 +13,7 @@ public class AuditDataResponse {
     private String fromAddress;
     private LocalDateTime time;
 
-    public static AuditDataResponse from(AuditData auditData) {
-        return new AuditDataResponse(auditData.getTransactionHash(), auditData.getEna(), auditData.getSignedAt());
+    public static AuditDataResponse from(AuditData auditData, String address) {
+        return new AuditDataResponse(auditData.getTransactionHash(), address, auditData.getSignedAt());
     }
 }

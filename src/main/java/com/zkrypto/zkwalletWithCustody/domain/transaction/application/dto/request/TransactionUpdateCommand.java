@@ -7,4 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TransactionUpdateCommand {
     private Long transactionId;
+    private String password;
 }

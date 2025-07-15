@@ -28,6 +28,6 @@ public interface CorporationRepository extends JpaRepository<Corporation, UUID> 
 
     Optional<Corporation> findCorporationByName(String name);
 
-    @Query("select corporation.address from Corporation corporation where corporation.ena = : ena")
+    @Query("select corporation.address from Corporation corporation where corporation.ena = :ena")
     String findAddressByEna(@Param(value = "ena") String ena);
 }

@@ -55,7 +55,16 @@ public class NoteService {
         List<Note> notes = noteRepository.findNotSpendNotesByCorporation(corporation.getCorporationId());
 
         // 사용한적 없는 노트만 반환
-        return notes.stream().filter(note -> !transactionRepository.existsTransactionByFromUnSpentNote(note)).map(NoteResponse::from).toList();
+        return notes.stream().filter(note -> !transactionRepository.existsTransactionByFromUnSpentNote(note)).map(this::toNoteResponse).toList();
+    }
+
+    private NoteResponse toNoteResponse(Note note) {
+        String address = enaToAddress(note.getAddr());
+        return NoteResponse.from(note, address);
+    }
+
+    private String enaToAddress(String ena) {
+        return corporationRepository.findAddressByEna(ena);
     }
 
     /**

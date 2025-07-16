@@ -25,7 +25,7 @@ public class NoteEventListener {
         Note note = noteService.getNote(event.getCt(), event.getCommitment(), event.getNumLeaves(), event.getCorporation());
 
         // 노트 생성 확인
-        if(!noteService.isOwner(note)) {
+        if(!note.isOwner()) {
             throw new IllegalArgumentException("자신의 노트가 아닙니다.");
         }
 

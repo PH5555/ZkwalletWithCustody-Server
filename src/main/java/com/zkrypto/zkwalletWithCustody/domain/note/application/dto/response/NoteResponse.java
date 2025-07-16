@@ -29,14 +29,14 @@ public class NoteResponse {
         this.isSpent = isSpent;
     }
 
-    public static NoteResponse from(Note note) {
+    public static NoteResponse from(Note note, String address) {
         return new NoteResponse(
                 note.getNoteId(),
                 note.getOpen(),
                 note.getTokenAddress(),
                 note.getTokenId(),
                 note.getAmount(),
-                note.getAddr(),
+                address,
                 note.getCommitment(),
                 note.getIndex(),
                 note.getIsSpent());

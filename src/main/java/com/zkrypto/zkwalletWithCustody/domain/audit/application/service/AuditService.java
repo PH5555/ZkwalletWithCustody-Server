@@ -6,6 +6,7 @@ import com.zkrypto.zkwalletWithCustody.domain.audit.application.dto.response.Aud
 import com.zkrypto.zkwalletWithCustody.domain.audit.domain.constant.AuditKey;
 import com.zkrypto.zkwalletWithCustody.domain.audit.domain.entity.AuditData;
 import com.zkrypto.zkwalletWithCustody.domain.audit.domain.repository.AuditDataRepository;
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.domain.note.application.service.NoteService;
 import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
@@ -32,8 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AuditService {
     private final AuditDataRepository auditDataRepository;
     private final NoteService noteService;
-    private final Web3Service web3Service;
-    private final CorporationRepository corporationRepository;
+    private final CorporationService corporationService;
 
     /**
      * 모든 감사 데이터 조회 메서드
@@ -44,7 +44,7 @@ public class AuditService {
     }
 
     private AuditDataResponse toAuditDateResponse(AuditData auditData) {
-        String address = enaToAddress(auditData.getEna());
+        String address = corporationService.enaToAddress(auditData.getEna());
         return AuditDataResponse.from(auditData, address);
     }
 
@@ -91,7 +91,7 @@ public class AuditService {
     }
 
     private AuditResultResponse toAuditResultResponse(Note note) {
-        String address = enaToAddress(note.getAddr());
+        String address = corporationService.enaToAddress(note.getAddr());
         return AuditResultResponse.from(note, address);
     }
 
@@ -111,9 +111,5 @@ public class AuditService {
         } else {
             return ((value.mod(mod)).add(mod)).mod(mod);
         }
-    }
-
-    private String enaToAddress(String ena) {
-        return corporationRepository.findAddressByEna(ena);
     }
 }

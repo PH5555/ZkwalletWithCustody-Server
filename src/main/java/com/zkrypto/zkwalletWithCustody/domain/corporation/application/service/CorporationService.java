@@ -123,4 +123,11 @@ public class CorporationService {
 
         return corporation.getMembers().stream().map(member -> new CorporationMembersResponse(member.getName(), member.getPosition(), member.getCreatedAt(), member.getMemberId().toString())).toList();
     }
+
+    /**
+     * 법인의 ENA를 EOA로 변환해주는 메서드
+     */
+    public String enaToAddress(String ena) {
+        return corporationRepository.findAddressByEna(ena);
+    }
 }

@@ -1,5 +1,6 @@
 package com.zkrypto.zkwalletWithCustody.domain.note.application.service;
 
+import com.zkrypto.zkwalletWithCustody.domain.corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.entity.Corporation;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
 import com.zkrypto.zkwalletWithCustody.domain.note.application.dto.response.NoteResponse;
@@ -32,6 +33,7 @@ public class NoteService {
     private final CorporationRepository corporationRepository;
     private final Web3Service web3Service;
     private final TransactionRepository transactionRepository;
+    private final CorporationService corporationService;
 
     @Value("${contract.mixer.address}")
     private String contractAddress;
@@ -59,12 +61,8 @@ public class NoteService {
     }
 
     private NoteResponse toNoteResponse(Note note) {
-        String address = enaToAddress(note.getAddr());
+        String address = corporationService.enaToAddress(note.getAddr());
         return NoteResponse.from(note, address);
-    }
-
-    private String enaToAddress(String ena) {
-        return corporationRepository.findAddressByEna(ena);
     }
 
     /**

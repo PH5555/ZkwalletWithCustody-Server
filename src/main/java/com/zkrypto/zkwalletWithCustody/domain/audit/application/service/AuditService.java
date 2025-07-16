@@ -8,6 +8,7 @@ import com.zkrypto.zkwalletWithCustody.domain.audit.domain.entity.AuditData;
 import com.zkrypto.zkwalletWithCustody.domain.audit.domain.repository.AuditDataRepository;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.application.service.CorporationService;
 import com.zkrypto.zkwalletWithCustody.domain.corporation.domain.repository.CorporationRepository;
+import com.zkrypto.zkwalletWithCustody.domain.member.domain.constant.Role;
 import com.zkrypto.zkwalletWithCustody.domain.note.application.service.NoteService;
 import com.zkrypto.zkwalletWithCustody.domain.note.domain.entity.Note;
 import com.zkrypto.zkwalletWithCustody.global.crypto.constant.AffinePoint;
@@ -32,7 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class AuditService {
     private final AuditDataRepository auditDataRepository;
-    private final NoteService noteService;
     private final CorporationService corporationService;
 
     /**
@@ -66,24 +66,10 @@ public class AuditService {
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 데이터가 없습니다."));
 
         // 노트 복원
-        AffinePoint c0 = new AffinePoint(new BigInteger(auditData.getCt().get(0)), new BigInteger(auditData.getCt().get(1)));
-        AffinePoint c1 = new AffinePoint(new BigInteger(auditData.getCt().get(2)), new BigInteger(auditData.getCt().get(3)));
-        AffinePoint c2 = new AffinePoint(new BigInteger(auditData.getCt().get(4)), new BigInteger(auditData.getCt().get(5)));
-        TwistedEdwardsCurve curve = new TwistedEdwardsCurve();
-        AffinePoint curveC0 = curve.computeScalarMul(c0, new BigInteger(auditCommand.getAuditorKey()));
-        AffinePoint curveK = curve.subAffinePoint(c2, curveC0);
-
-        MiMC7 mimc7 = new MiMC7();
-        List<BigInteger> ret = new ArrayList<>();
-        AtomicInteger counter = new AtomicInteger(0);
-        auditData.getCt().stream().skip(6).forEach((e) -> {
-            BigInteger hash = mimc7.hash(curveK.getX(), BigInteger.valueOf(counter.getAndIncrement()));
-            ret.add(mod(new BigInteger(e).subtract(hash), new BigInteger("21888242871839275222246405745257275088548364400416034343698204186575808495617")));
-        });
-        Note note = Note.from(ret, auditData.getCom(), new BigInteger(auditData.getNumLeaves()));
+        Note note = Note.recoverNote(auditData.getCt().stream().map(BigInteger::new).toList(), new BigInteger(auditData.getCom()), new BigInteger(auditData.getNumLeaves()), auditCommand.getAuditorKey(), Role.ROLE_AUDIT);
 
         // 노트 유효성 확인
-        if(!noteService.isOwner(note)) {
+        if(!note.isOwner()) {
             throw new IllegalArgumentException("감사를 실패했습니다.");
         }
 
